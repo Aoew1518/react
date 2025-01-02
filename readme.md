@@ -1,19 +1,21 @@
-# vite 创建一个 react 项目
- - npm create vite@latest
-# 创建 react-redux 项目
- - npm install @reduxjs/toolkit react-redux
-# 创建 react-router-dom 项目
- - npm install react-router-dom
-
- # 构建 react 项目
+# 常见 npm 包下载地址
+## 构建 react 项目
 - 不兼容 react 18 版本，建议不要使用
-    npx create-react-app react-basic
+    npx create-react-app
 - Next.js
     npx create-next-app@latest
 - vite
     npm create vite@latest
 
-# day 1
+## 创建 react-redux 项目
+ - npm install @reduxjs/toolkit react-redux
+
+## 创建 react-router-dom 项目
+ - npm install react-router-dom
+
+
+# react 学历历程
+## day 1
 - 通过 {} 来插入变量
 - react 18 组件化 + 函数式写法
 - jsx = js + xml，通过 babel 转换为 js 给浏览器编译
@@ -21,7 +23,7 @@
 - lodash 库，用于处理数据进行排序，返回的是一个深拷贝的数据，不会影响原数据
 - classnames 库，用于处理类名，可以传入多个类名，返回的是一个字符串
 
-# day 2
+## day 2
 - useRef + useState 进行表单受控
 - uuid 生成唯一id + day.js 处理日期格式
 - 组件通信
@@ -37,18 +39,49 @@
 - 自定义 hooks 函数，以 use 开头，用于封装公共逻辑
 - json-server 库模拟后端接口，通过 axios 调用接口
 
-# day 3
+## day 3
 - redux: store 传递数据 + actons 数据行为 + reducer 执行逻辑  + dispatch 提交数据 + subscrib 监听数据 + getState 获取状态
     - Redux Toolkit: 用于简化 redux 的使用，包括 createSlice, configureStore, useDispatch, useSelector
     - react-redux: 用于连接 react 和 redux
     - useSelector: 用于获取 store 中的数据
     - useDispatch: 用于提交数据
 
-# day 4
-- react-router-dom: 用于路由管理
+## day 4
+- react-router-dom: 用于路由管理:
+     `npm install react-router-dom`
     - BrowserRouter: 路由容器
     - Route: 路由规则
     - Link: 路由链接
     - Switch: 路由切换
     - Redirect: 路由重定向
+    - 主文件引入路由
+        import { RouterProvider } from 'react-router-dom'
+    - 导入路由模式
+        import { createBrowserRouter, createHashRouter } from 'react-router-dom'
+    - 路由跳转
+        import { Link, useNavigate } from 'react-router-dom'
+        - Link 组件：用于在页面中创建导航链接，浏览器会解析为a标签
+        ```<Link to="/article?id=1001&name=jack">文章</Link>```
+        - useNavigate：用于在函数组件中实现导航功能， 如
+        ```onClick={() => navigate('/article?id=1001&name=jack')}```
+    - 路由参数
+        - 动态路由参数：在路由路径中使用冒号来定义动态参数，如 `/article/:id/:name`
+        - 查询参数：在路由路径中使用问号来定义查询参数，如 `/article?id=1001&name=jack`
+        - 获取路由参数：使用 useParams、useSearchParams 钩子函数来获取路由参数
+        - useParams：用于获取动态路由参数，如
+        ```const { id, name } = useParams()```
+        - useSearchParams：用于获取查询参数，如
+        ```const [params] = useSearchParams()```
+    - 路由匹配
+        import { Route, Routes } from 'react-router-dom'
+        - Route 组件：用于定义路由规则
+        - Routes 组件：用于包裹所有的 Route 组件，用于路由匹配
+    - 路由守卫
+        import { Outlet } from 'react-router-dom'
+        - Outlet 组件：用于在路由匹配成功时渲染子路由，如
+        ```<Outlet />```
+    - 路由重定向
+        import { Navigate } from 'react-router-dom'
+        - Navigate 组件：用于实现路由重定向，如
+        ```<Navigate to="/home" />```
 

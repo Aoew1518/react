@@ -1,4 +1,11 @@
-# 构建 react 项目
+# vite 创建一个 react 项目
+ - npm create vite@latest
+# 创建 react-redux 项目
+ - npm install @reduxjs/toolkit react-redux
+# 创建 react-router-dom 项目
+ - npm install react-router-dom
+
+ # 构建 react 项目
 - 不兼容 react 18 版本，建议不要使用
     npx create-react-app react-basic
 - Next.js

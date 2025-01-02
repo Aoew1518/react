@@ -1,17 +1,15 @@
 # 常见 npm 包下载地址
 ## 构建 react 项目
 - 不兼容 react 18 版本，建议不要使用
-    npx create-react-app
+    ```npx create-react-app```
 - Next.js
-    npx create-next-app@latest
+    ```npx create-next-app@latest```
 - vite
-    npm create vite@latest
-
+    ```npm create vite@latest```
 ## 创建 react-redux 项目
- - npm install @reduxjs/toolkit react-redux
-
+```npm install @reduxjs/toolkit react-redux```
 ## 创建 react-router-dom 项目
- - npm install react-router-dom
+```npm install react-router-dom```
 
 
 # react 学历历程

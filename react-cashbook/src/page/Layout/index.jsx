@@ -1,6 +1,6 @@
 import { TabBar } from "antd-mobile"
 import { useEffect, useState } from "react"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useDispatch } from 'react-redux'
 import { getBillList } from "@/store/modules/billStore"
 import './index.scss'
@@ -31,6 +31,7 @@ const tabs = [
 const Layout = () => {
     // 异步请求获取账单
     const dispatch = useDispatch()
+    const location = useLocation();
     useEffect(() => {
         dispatch(getBillList())
     }, [dispatch])
@@ -38,14 +39,19 @@ const Layout = () => {
     // 当前激活项的item
     const [activeKey, setActiveKey] = useState('/month')
 
+    // 动态监听 URL 的变化
+    useEffect(() => {
+        // 获取第一个路径部分
+        const firstPath = location.pathname.split('/')[1]
+        setActiveKey(`/${firstPath || 'month'}`);
+    }, [location.pathname]);
+
     // 切换菜单跳转路由
     const navigate = useNavigate()
     const swithRoute = (path) => {
         setActiveKey(path)
         navigate(path)
-        console.log(path, activeKey)
     }
-
 
     return (
         <div className="layout">

@@ -57,6 +57,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
+                index: true,
                 path: '/month',
                 element: (
                     <Suspense fallback={<Loading message="正在加载..." />}>

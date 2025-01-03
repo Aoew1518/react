@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import billStore from './modules/billStore'
+import billReducer from './modules/billStore'
 
 const store = configureStore({
     reducer: {
-        billStore,
+        bill: billReducer
     },
 });
 

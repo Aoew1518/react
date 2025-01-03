@@ -1,3 +1,8 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 :root:root {
   --adm-color-primary: rgb(105, 174, 120);
 }

@@ -1,6 +1,6 @@
 # 常见 npm 包下载地址
 ## 构建 react 项目
-- 不兼容 react 18 版本，建议不要使用
+- 不兼容 react 18 版本，建议不要使用cra
 ```npx create-react-app```
 - Next.js
 ```npx create-next-app@latest```
@@ -43,6 +43,8 @@
     - react-redux: 用于连接 react 和 redux
     - useSelector: 用于获取 store 中的数据
     - useDispatch: 用于提交数据
+- 仿美团外卖的购物车demo
+    - redux 实现购物车休息传递和修改
 
 ## day 4
 - react-router-dom: 用于路由管理:
@@ -83,3 +85,18 @@
         - Navigate 组件：用于实现路由重定向，如
         ```<Navigate to="/home" />```
 
+## day 5
+ - 记帐本：
+     - 1.使用redux进行状态管理
+     - 2.使用react-router-dom进行路由管理
+     - 3.使用dayjs进行时间处理
+     - 4.使用classnames进行class类名处理
+     - 5.使用antd-mobile进行移动端组件库
+     - 6.使用axios插件进行请求
+     - 7.使用json-server进行数据mock
+ - 后续想法：
+     - 1.完成登录请求部分
+     - 2.使用 koa + mysql 搭建后端完成整个项目请求
+     - 3.扩充功能：
+        - 增加记账备注功能，需要使用到编辑器功能
+        - 增加图像可视化功能，需要使用到echarts

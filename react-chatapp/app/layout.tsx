@@ -1,6 +1,7 @@
 // import AppContextProvider from "@/components/AppContext"
 "use client"
-import "./globals.css"
+import "@/styles/globals.css"
+import "@/styles/markdown.css"
 import store from '../store/index.js'
 import { Provider } from 'react-redux'
 

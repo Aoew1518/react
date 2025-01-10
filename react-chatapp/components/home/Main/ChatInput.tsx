@@ -4,7 +4,7 @@ import { PiLightningFill, PiStopBold } from "react-icons/pi"
 import { FiSend } from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
 import { useState, useRef } from "react"
-import { v4 as uuidv4 } from "uuid"
+// import { v4 as uuidv4 } from "uuid"
 import { Message, MessageRequestBody } from "@/types/chat"
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -13,6 +13,7 @@ import {
     removeMessageList,
     setStreamingId
 } from '@/store/modules/mainStore'
+import eventBus from "@/store/eventBus";
 
 // 聊天输入框
 export default function ChatInput() {
@@ -43,6 +44,8 @@ export default function ChatInput() {
         if (!chatIdRef.current) {
             chatIdRef.current = data.message.chatId
             // publish("fetchChatList")
+            // 没有chatid，发布一个事件，让服务端重新获取对话列表
+            eventBus.publish("fetchChatList");
         }
         return data.message
     }

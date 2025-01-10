@@ -15,3 +15,5 @@ export interface MessageRequestBody {
     messages: Message[]
     model: string
 }
+
+export type Callback = (data?: any) => void;

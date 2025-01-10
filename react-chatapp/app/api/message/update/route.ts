@@ -15,7 +15,19 @@ export async function POST(request: NextRequest) {
         // 将 chatId 设置为新创建的对话的 id
         data.chatId = chat.id
     }
-    
+    else {
+        // 如果有 chatId，则更新对话
+        await prisma.chat.update({
+            data: {
+                updateTime: new Date(),
+                title: "更新了对话"
+            },
+            where: {
+                id: data.chatId
+            }
+        })
+    }
+
     // prisma 中的 upsert 用于创建或更新数据
     const message = await prisma.message.upsert({
         // 需要创造的数据
@@ -42,6 +54,5 @@ export async function POST(request: NextRequest) {
     //         data
     //     })
     // }
-
     return NextResponse.json({ code: 0, data: { message } })
 }

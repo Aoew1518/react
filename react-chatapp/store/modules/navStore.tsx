@@ -13,9 +13,12 @@ const navStore = createSlice({
         },
         setThemeMode(state, action) {
             state.themeMode = action.payload
-        }
+        },
     }
 });
 
-export const { setIsShowNav, setThemeMode } = navStore.actions;
+export const {
+    setIsShowNav,
+    setThemeMode,
+} = navStore.actions;
 export default navStore.reducer;

@@ -6,8 +6,6 @@ import "@/styles/markdown.css"
 import store from '../store/index.js'
 import { Provider } from 'react-redux'
 
-
-
 export default function RootLayout({
     children
 }: {

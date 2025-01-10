@@ -1,6 +1,6 @@
 "use client"
 import { createSlice } from "@reduxjs/toolkit";
-import { Message } from "@/types/chat"
+import { Chat, Message } from "@/types/chat"
 
 const mainStore = createSlice({
     name: 'main',
@@ -11,14 +11,16 @@ const mainStore = createSlice({
         messageList: [] as Message[],
         // 数据流 id
         streamingId: '',
+        // 选择的聊天列表
+        selectedChat: {} as Chat,
     },
     reducers: {
         setCurrentModel(state, action) {
             state.currentModel = action.payload
         },
-        // setMessageList(state, action) {
-        //     state.messageList = action.payload
-        // },
+        setMessageList(state, action) {
+            state.messageList = action.payload
+        },
         addMessageList(state, action) {
             state.messageList.push(action.payload as Message)
         },
@@ -36,17 +38,22 @@ const mainStore = createSlice({
         },
         setStreamingId(state, action) {
             state.streamingId = action.payload
-        }
+        },
+        setSelectedChat(state, action) {
+            state.selectedChat = action.payload
+        },
     }
 });
 
 // 调用同步reducers中的方法传入异步数据
 export const {
     setCurrentModel,
+    setMessageList,
     addMessageList,
     updataMessageList,
     removeMessageList,
-    setStreamingId
+    setStreamingId,
+    setSelectedChat
 } = mainStore.actions;
 // 异步请求部分，将异步请求数据注入到store中
 // const fetchChannlList = () => {

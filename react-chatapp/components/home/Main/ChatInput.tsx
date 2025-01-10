@@ -18,21 +18,64 @@ import {
 export default function ChatInput() {
     // 记录用户输入消息
     const [messageText, setMessageText] = useState("")
+    // 记录用户是否正在输入，useRef 的值更新不会导致组件重渲染。
     const stopRef = useRef(false)
+    // 保存对话id
+    const chatIdRef = useRef("")
     const { messageList, streamingId, currentModel } = useSelector((state: any) => state.mainStore)
     const dispatch = useDispatch()
 
-    // 点击发送消息
-    function clickSendMessages() {
-        // 用户信息
-        const message: Message = {
-            id: uuidv4(),
-            role: "user",
-            content: messageText
+    // 服务端创建消息或者更新消息
+    async function createOrUpdateMessage(message: Message) {
+        const response = await fetch("/api/message/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(message)
+        })
+        if (!response.ok) {
+            console.error(response.statusText)
+            return
         }
+        const { data } = await response.json()
+        // 在服务端创建好消息后，需要返回一个 chatid，用来标识对话
+        if (!chatIdRef.current) {
+            chatIdRef.current = data.message.chatId
+            // publish("fetchChatList")
+        }
+        return data.message
+    }
+
+    // 删除消息
+    async function deleteMessage(id: string) {
+        const response = await fetch(`/api/message/delete?id=${id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        if (!response.ok) {
+            console.error(response.statusText)
+            return
+        }
+        const { code } = await response.json()
+        // 为 0 则删除成功
+        return code === 0
+    }
+
+    // 点击发送消息
+    async function clickSendMessages() {
+        // 服务端请求用户信息
+        const message: Message = await createOrUpdateMessage({
+            role: "user",
+            content: messageText,
+            id: "",
+            chatId: chatIdRef.current
+        })
         // 把用户输入的消息添加到消息列表
         const messages = messageList.concat([message])
-        // 添加进消息列表
+        // 添加进 store 消息列表
         dispatch(addMessageList(message))
         // 清空输入款
         setMessageText("")
@@ -57,21 +100,23 @@ export default function ChatInput() {
 
         // 状态码是否正常
         if (!response.ok) {
-            console.log(response.statusText)
+            console.error(response.statusText)
             return
         }
         // 获取返回的消息是否存在
         if (!response.body) {
-            console.log("body error")
+            console.error("body error")
             return
         }
 
         // 请求成功后把服务端的消息添加到消息列表
-        const responseMessage: Message = {
-            id: uuidv4(),
+        const responseMessage: Message = await createOrUpdateMessage({
+            id: "",
             role: "assistant",
-            content: ""
-        }
+            content: "",
+            chatId: chatIdRef.current
+        })
+
         // 添加一个空消息列表，后续请求时不断更新该消息内容
         dispatch(addMessageList(responseMessage))
         dispatch(setStreamingId(responseMessage.id))
@@ -103,6 +148,8 @@ export default function ChatInput() {
                 content: content
             }))
         }
+        // 读取完成，更新服务端消息内容
+        createOrUpdateMessage({ ...responseMessage, content })
         // 重置消息流 id
         dispatch(setStreamingId(''))
     }
@@ -118,6 +165,13 @@ export default function ChatInput() {
         ) {
             // 获取最后一个消息
             const lastMessage = messages[messages.length - 1];
+            // 接口调用失败则打印错误日志
+            const result = await deleteMessage(lastMessage?.id || '')
+            if (!result) {
+                console.error("delete error")
+                return
+            }
+
             dispatch(removeMessageList(lastMessage))
             // 从本地数组中删除最后一个消息
             // messages.splice(messages.length - 1, 1)

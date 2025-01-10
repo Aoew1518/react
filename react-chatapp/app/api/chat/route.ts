@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
             // 获取消息内容的组后一条消息，即用户提问的消息
             const messageText = messages[messages.length - 1].content
             for (let i = 0; i < messageText.length; i++) {
-                // // 添加延迟查看数据发送效果
+                // 添加延迟查看数据发送效果
                 await sleep(50)
                 // 遍历消息内容发送给客户端
                 controller.enqueue(encoder.encode(messageText[i]))

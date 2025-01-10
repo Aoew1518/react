@@ -1,4 +1,5 @@
 // import AppContextProvider from "@/components/AppContext"
+// import EventBusContextProvider from "@/components/EventBusContext"
 "use client"
 import "@/styles/globals.css"
 import "@/styles/markdown.css"
@@ -16,7 +17,11 @@ export default function RootLayout({
         <Provider store={store}>
             <html lang='en'>
                 <body>
-                    {/* <AppContextProvider>{children}</AppContextProvider> */}
+                    {/* <AppContextProvider>
+                        <EventBusContextProvider>
+                            {children}
+                        </EventBusContextProvider>
+                    </AppContextProvider> */}
                     {children}
                 </body>
             </html>

@@ -10,7 +10,9 @@
  - remark-gfm 支持 markdown 中的表格语法，支持超链接跳转
  - react-syntax-highlighter 代码高亮
     - 支持 ts：npm i --save-dev @types/react-syntax-highlighter
- - uuid 生成唯一 id
+ - uuid 生成唯一 
+ - prisma 实现数据库操作
+    - 
 
 ##  启动项目
 npm run dev
@@ -38,4 +40,28 @@ import { v4 as uuidv4 } from "uuid"
 ```shell
 npm i uuid
 npm i --save-dev @types/uuid
+```
+
+### prisma 实现数据库操作
+```javascript
+import { v4 as uuidv4 } from "uuid"
+```
+
+```shell
+# 详细可看文档：https://www.prisma.io/docs/getting-started/quickstart-sqlite
+
+# 安装
+npm install prisma --save-dev
+# 初始化
+npx prisma init
+# 生成数据库
+npx prisma migrate dev --name init
+# 使用 sqlite3 命令查看数据库
+sqlite3 prisma/chatgpt-app.sqlite
+# 或者使用 prisma 的可视化工具查看数据表
+npx prisma studio
+# 生成数据库客户端
+npm i @prisma/client
+# 生成数据库客户端代码（更新之前的配置文件等，可使用代码支持修改数据库）
+npx prisma generate
 ```

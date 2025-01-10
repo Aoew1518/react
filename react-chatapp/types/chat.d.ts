@@ -5,9 +5,10 @@ export interface Chat {
 }
 
 export interface Message {
-    id: string
     role: "user" | "assistant"
     content: string
+    id?: string
+    chatId: string
 }
 
 export interface MessageRequestBody {

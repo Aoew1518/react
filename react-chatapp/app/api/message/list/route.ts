@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
             chatId
         },
         orderBy: {
-            createTime: "desc"
+            // 按照时间升序排列
+            createTime: "asc"
         }
     })
     return NextResponse.json({ code: 0, data: { list } })

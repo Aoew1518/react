@@ -3,18 +3,24 @@ import Button from "@/components/common/Button"
 import { ActionType } from "@/reducers/AppReducer"
 import { HiPlus } from "react-icons/hi"
 import { LuPanelLeftClose } from "react-icons/lu";
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+    setSelectedChat
+} from '@/store/modules/mainStore'
 import { setIsShowNav } from "@/store/modules/navStore"
 
 export default function Menubar() {
     // const { dispatch } = useAppContext()
     const dispatch = useDispatch();
+    const { messageList, selectedChat } = useSelector((state: any) => state.mainStore)
+
     return (
         <div className='flex space-x-3'>
             <Button
                 icon={HiPlus}
                 variant='outline'
                 className='flex-1'
+                onClick={() => dispatch(dispatch(setSelectedChat(null)))}
             >
                 新建对话
             </Button>

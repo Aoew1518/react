@@ -3,6 +3,9 @@ import { useEffect, useState } from "react"
 import { AiOutlineEdit } from "react-icons/ai"
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md"
 import { PiChatBold, PiTrashBold } from "react-icons/pi"
+import { useDispatch, useSelector } from "react-redux"
+import { setSelectedChat } from "@/store/modules/mainStore"
+import eventBus from "@/store/eventBus";
 
 type Props = {
     item: Chat
@@ -15,6 +18,8 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
     // 选中和删除状态
     const [editing, setEditing] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [title, setTitle] = useState(item.title)
+    const dispatch = useDispatch()
 
     // selected 变化时，重置编辑和删除状态
     useEffect(() => {
@@ -22,9 +27,54 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
     }, [selected])
 
     // 重置状态
-    const resetState = () => {
+    function resetState() {
         setEditing(false)
         setDeleting(false)
+    }
+
+    // 更新聊天的标题
+    async function updateChat() {
+        const response = await fetch("/api/chat/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: item.id, title })
+        })
+
+        if (!response.ok) {
+            console.error(response.statusText)
+            return
+        }
+
+        const { code } = await response.json()
+        if (code === 0) {
+            // 更新成功，重置状态，发布一次订阅
+            eventBus.publish("fetchChatList");
+        }
+    }
+
+    // 删除聊天及其所有消息内容
+    async function deleteChat() {
+        const response = await fetch(`/api/chat/delete?id=${item.id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!response.ok) {
+            console.error(response.statusText)
+            return
+        }
+
+        const { code } = await response.json()
+        if (code === 0) {
+            // 删除成功，重置状态，发布一次订阅
+            eventBus.publish("fetchChatList");
+            // 将当前选择的聊天置为空
+            dispatch(setSelectedChat(null))
+        }
     }
 
     return (
@@ -44,7 +94,10 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
                     // 自动获取焦点
                     autoFocus={true}
                     className='flex-1 text-sm min-w-0 bg-transparent outline-none'
-                    defaultValue={item.title}
+                    value={title}
+                    onChange={(e) => {
+                        setTitle(e.target.value)
+                    }}
                 />
             ) : (
                 <div className='relative flex-1 text-sm truncate'>
@@ -65,10 +118,10 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
                             <button
                                 onClick={(e) => {
                                     if (deleting) {
-                                        console.log("deleted")
+                                        deleteChat()
                                     }
                                     else {
-                                        console.log("edited")
+                                        updateChat()
                                     }
                                     resetState()
                                     // 阻止事件冒泡

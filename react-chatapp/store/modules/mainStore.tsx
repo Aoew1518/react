@@ -6,7 +6,7 @@ const mainStore = createSlice({
     name: 'main',
     initialState: {
         // 当前模型选择
-        currentModel: 'gpt-3.5-turbo',
+        currentModel: 'deepseek-chat',
         // 消息列表
         messageList: [] as Message[],
         // 数据流 id
@@ -39,8 +39,18 @@ const mainStore = createSlice({
         setStreamingId(state, action) {
             state.streamingId = action.payload
         },
+        // 更新选中聊天的内容或者通过id来选中聊天标题（创建新对话时通过id来选中新的聊天内容）
         setSelectedChat(state, action) {
-            state.selectedChat = action.payload
+            if (action && action?.payload?.length === 1 && action?.payload?.id) {
+                state.selectedChat = {
+                    ...state.selectedChat, // 保留其他属性
+                    id: action.payload.id, // 更新 id
+                };
+            }
+            else {
+                // 否则，完全替换 selectedChat
+                state.selectedChat = action.payload;
+            }
         },
     }
 });

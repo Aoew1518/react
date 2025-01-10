@@ -3,7 +3,7 @@ import { MdRefresh } from "react-icons/md"
 import { PiLightningFill, PiStopBold } from "react-icons/pi"
 import { FiSend } from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 // import { v4 as uuidv4 } from "uuid"
 import { Message, MessageRequestBody } from "@/types/chat"
 import { useSelector, useDispatch } from "react-redux";
@@ -11,9 +11,11 @@ import {
     addMessageList,
     updataMessageList,
     removeMessageList,
-    setStreamingId
+    setStreamingId,
+    setSelectedChat
 } from '@/store/modules/mainStore'
 import eventBus from "@/store/eventBus";
+import { message } from "antd";
 
 // 聊天输入框
 export default function ChatInput() {
@@ -23,8 +25,19 @@ export default function ChatInput() {
     const stopRef = useRef(false)
     // 保存对话id
     const chatIdRef = useRef("")
-    const { messageList, streamingId, currentModel } = useSelector((state: any) => state.mainStore)
+    const { messageList, streamingId, currentModel, selectedChat } = useSelector((state: any) => state.mainStore)
     const dispatch = useDispatch()
+    const [messageApi, contextHolder] = message.useMessage();
+
+    // 更新输入款所发送的消息所对应的消息列表的id
+    useEffect(() => {
+        if (chatIdRef.current === selectedChat?.id) {
+            return
+        }
+        chatIdRef.current = selectedChat?.id ?? ""
+        // 如果正在回复消息则停止接受消息
+        stopRef.current = true
+    }, [selectedChat])
 
     // 服务端创建消息或者更新消息
     async function createOrUpdateMessage(message: Message) {
@@ -46,29 +59,21 @@ export default function ChatInput() {
             // publish("fetchChatList")
             // 没有chatid，发布一个事件，让服务端重新获取对话列表
             eventBus.publish("fetchChatList");
+            // 创建新对话时，将当前对话设置为选中
+            dispatch(setSelectedChat({ id: chatIdRef.current }))
         }
         return data.message
     }
 
-    // 删除消息
-    async function deleteMessage(id: string) {
-        const response = await fetch(`/api/message/delete?id=${id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        if (!response.ok) {
-            console.error(response.statusText)
-            return
-        }
-        const { code } = await response.json()
-        // 为 0 则删除成功
-        return code === 0
-    }
-
     // 点击发送消息
     async function clickSendMessages() {
+        if (currentModel === 'GPT-4' || currentModel === 'gpt-35-turbo') {
+            messageApi.info({
+                content: '该模型暂未开放，请选择deepseek-chat模型',
+                duration: 2,
+            })
+            return
+        }
         // 服务端请求用户信息
         const message: Message = await createOrUpdateMessage({
             role: "user",
@@ -88,6 +93,8 @@ export default function ChatInput() {
 
     // 发送消息
     async function sendMessage(messages: Message[]) {
+        // 保证发送前的停止发送为默认值 false
+        stopRef.current = false
         const body: MessageRequestBody = { messages, model: currentModel }
         const controller = new AbortController()
         const response = await fetch("/api/chat", {
@@ -160,7 +167,6 @@ export default function ChatInput() {
     // 重新发送
     async function resend() {
         const messages = [...messageList] as Message[]
-        console.log(messages)
         // 删除最后一个消息且且是回复的消息
         if (
             messages.length !== 0 &&
@@ -179,78 +185,97 @@ export default function ChatInput() {
             // 从本地数组中删除最后一个消息
             // messages.splice(messages.length - 1, 1)
             messages.pop()
-            console.log('splice', messages)
         }
         sendMessage(messages)
     }
 
+    // 删除消息
+    async function deleteMessage(id: string) {
+        const response = await fetch(`/api/message/delete?id=${id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        if (!response.ok) {
+            console.error(response.statusText)
+            return
+        }
+        const { code } = await response.json()
+        // 为 0 则删除成功
+        return code === 0
+    }
+
     return (
-        <div className='absolute bottom-0 inset-x-0 bg-gradient-to-b from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] to-[54.73%] pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]'>
-            <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
-                {/* 是否显示按钮，正在生成则显示停止生成，否则显示重新生成 */}
-                {messageList.length !== 0 &&
-                    (streamingId !== "" ? (
+        <>
+            {contextHolder}
+            <div className='absolute bottom-0 inset-x-0 bg-gradient-to-b from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] to-[54.73%] pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]'>
+                <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
+                    {/* 是否显示按钮，正在生成则显示停止生成，否则显示重新生成 */}
+                    {messageList.length !== 0 &&
+                        (streamingId !== "" ? (
+                            <Button
+                                icon={PiStopBold}
+                                variant='primary'
+                                onClick={() => {
+                                    stopRef.current = true
+                                }}
+                                className='font-medium'
+                            >
+                                停止生成
+                            </Button>
+                        ) : (
+                            <Button
+                                icon={MdRefresh}
+                                variant='primary'
+                                onClick={() => {
+                                    resend()
+                                }}
+                                className='font-medium'
+                            >
+                                重新生成
+                            </Button>
+                        ))}
+                    <div className='flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] py-4'>
+                        <div className='mx-3 mb-2.5'>
+                            <PiLightningFill />
+                        </div>
+                        {/* 消息输入框 */}
+                        <TextareaAutoSize
+                            className='outline-none flex-1 max-h-64 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0'
+                            placeholder='输入一条消息...'
+                            rows={1}
+                            value={messageText}
+                            onChange={(e) => {
+                                setMessageText(e.target.value)
+                            }}
+                        />
+                        {/* 发送按钮 */}
                         <Button
-                            icon={PiStopBold}
+                            className='mx-3 !rounded-lg'
+                            icon={FiSend}
+                            // 为空或者正在生成时禁用
+                            disabled={messageText.trim() === '' || streamingId !== ''}
                             variant='primary'
                             onClick={() => {
-                                stopRef.current = true
+                                clickSendMessages()
                             }}
-                            className='font-medium'
-                        >
-                            停止生成
-                        </Button>
-                    ) : (
-                        <Button
-                            icon={MdRefresh}
-                            variant='primary'
-                            onClick={() => {
-                                resend()
-                            }}
-                            className='font-medium'
-                        >
-                            重新生成
-                        </Button>
-                    ))}
-                <div className='flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] py-4'>
-                    <div className='mx-3 mb-2.5'>
-                        <PiLightningFill />
+                        />
                     </div>
-                    {/* 消息输入框 */}
-                    <TextareaAutoSize
-                        className='outline-none flex-1 max-h-64 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0'
-                        placeholder='输入一条消息...'
-                        rows={1}
-                        value={messageText}
-                        onChange={(e) => {
-                            setMessageText(e.target.value)
-                        }}
-                    />
-                    {/* 发送按钮 */}
-                    <Button
-                        className='mx-3 !rounded-lg'
-                        icon={FiSend}
-                        // 为空或者正在生成时禁用
-                        disabled={messageText.trim() === '' || streamingId !== ''}
-                        variant='primary'
-                        onClick={() => {
-                            clickSendMessages()
-                        }}
-                    />
+                    {/* 底部来源信息 */}
+                    <footer className='text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6'>
+                        ©️{new Date().getFullYear()}&nbsp;{" "}
+                        <a
+                            className='font-medium py-[1px] border-b border-dotted border-black/60 hover:border-black/0 dark:border-gray-200 dark:hover:border-gray-200/0 animated-underline'
+                            href='https://github.com/Aoew1518'
+                            target='_blank'
+                        >
+                            Aoew1518
+                        </a>
+                        .&nbsp;基于 OpenAI 提供的内容
+                    </footer>
                 </div>
-                {/* 底部来源信息 */}
-                <footer className='text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6'>
-                    ©️{new Date().getFullYear()}&nbsp;{" "}
-                    <a
-                        className='font-medium py-[1px] border-b border-dotted border-black/60 hover:border-black/0 dark:border-gray-200 dark:hover:border-gray-200/0 animated-underline'
-                        href='https://github.com/Aoew1518'
-                        target='_blank'
-                    >
-                        Aoew1518
-                    </a>
-                    .&nbsp;基于 OpenAI 提供的内容
-                </footer>
             </div>
-        </div>
+        </>
     )
 }

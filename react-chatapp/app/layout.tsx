@@ -12,6 +12,8 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
+        // 不用 useContext 获取上下文，改用 redux 管理状态
+        // 但仍然保留 useContext 的逻辑代码，以提供学习使用
         <Provider store={store}>
             <html lang='en'>
                 <body>

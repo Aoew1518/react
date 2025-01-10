@@ -88,10 +88,15 @@ export default function ChatList() {
     // ])
     // 选中的聊天内容
     const dispatch = useDispatch()
-    // 聊天列表
-    const [chatList, setChatList] = useState<Chat[]>([])
     // 分页
     const pageRef = useRef(1)
+    const loadMoreRef = useRef(null)
+    // 是否还有更多数据
+    const hasMoreRef = useRef(false)
+    const loadingRef = useRef(false)
+
+    // 聊天列表
+    const [chatList, setChatList] = useState<Chat[]>([])
     const { selectedChat } = useSelector((state: any) => state.mainStore)
 
     // 得到分组好的列表
@@ -101,16 +106,25 @@ export default function ChatList() {
 
     // 获取当前聊天列表数据
     async function getChatListData() {
+        // 避免反复滑动列表底部而进行多次请求
+        if (loadingRef.current) {
+            return
+        }
+        loadingRef.current = true
+
         const response = await fetch(`/api/chat/list?page=${pageRef.current}`, {
             method: "GET"
         })
 
         if (!response.ok) {
+            loadingRef.current = false
             console.error(response.statusText)
             return
         }
 
         const { data } = await response.json()
+        hasMoreRef.current = data.hasMore
+        
         // 更新当前对话列表
         if (pageRef.current === 1) {
             setChatList(data.list)
@@ -118,27 +132,20 @@ export default function ChatList() {
         else {
             setChatList((list) => list.concat(data.list))
         }
+        // 每次发送请求后，页码递增
+        pageRef.current++
+        loadingRef.current = false
     }
 
     useEffect(() => {
         getChatListData()
     }, [])
 
-    // useEffect(() => {
-    //     // 发布订阅模式，当有新的聊天内容时，更新chatList
-    //     const callback: EventListener = () => {
-    //         console.log("fetchChatList")
-    //     }
-    //     subscribe("fetchChatList", callback)
-    //     // 组件卸载时取消订阅
-    //     return () => unsubscribe("fetchChatList", callback)
-    // }, [])
-
     useEffect(() => {
         const callback = () => {
             console.log("fetchChatList");
             // 收到事件通知时，重置当前页码，重新获取列表数据
-            pageRef.current === 1
+            pageRef.current = 1
             getChatListData();
         };
 
@@ -150,6 +157,29 @@ export default function ChatList() {
             eventBus.unsubscribe("fetchChatList", callback);
         };
     }, []);
+
+    useEffect(() => {
+        let observer: IntersectionObserver | null = null
+        let div = loadMoreRef.current
+        if (div) {
+            // 监听消息标题列表底部是否出现可视窗口
+            observer = new IntersectionObserver((entries) => {
+                // 滑动到底部时，加载更多数据
+                if (entries[0].isIntersecting && hasMoreRef.current) {
+                    console.log("滑动到底部fetchChatList")
+                    getChatListData()
+                }
+            })
+            observer.observe(div)
+        }
+
+        // 组件卸载时取消监听
+        return () => {
+            if (observer && div) {
+                observer.unobserve(div)
+            }
+        }
+    }, [])
 
     return (
         <div className='flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto'>
@@ -177,6 +207,7 @@ export default function ChatList() {
                     </div>
                 )
             })}
+            <div ref={loadMoreRef}>&nbsp;</div>
         </div>
     )
 }

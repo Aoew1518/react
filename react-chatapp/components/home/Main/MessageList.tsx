@@ -51,7 +51,7 @@ export default function MessageList() {
     }
 
     useEffect(() => {
-        if (selectedChat) {
+        if (selectedChat && selectedChat.id) {
             getMessageListData(selectedChat.id)
         }
         else {
@@ -62,7 +62,7 @@ export default function MessageList() {
     return (
         <div className='w-full pt-10 pb-48 dark:text-gray-300'>
             <ul>
-                {messageList.map((message: Message) => {
+                {messageList.map((message: Message, index: number) => {
                     const isUser = message.role === "user"
                     return (
                         <li
@@ -71,7 +71,7 @@ export default function MessageList() {
                                 isUser
                                     ? "bg-white dark:bg-gray-800"
                                     : "bg-gray-100 dark:bg-gray-700"
-                            }`}
+                            } ${index === messageList.length - 1 ? 'mb-10' : ''}`}
                         >
                             <div className='w-full max-w-4xl mx-auto flex space-x-6 px-4 py-6 text-lg'>
                                 <div className='text-3xl leading-[1]'>

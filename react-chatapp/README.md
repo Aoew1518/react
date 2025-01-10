@@ -2,6 +2,7 @@
 ## react 18 + next
  - 通过 page + layout 来实现页面布局和路由跳转
  - App router
+    - antd: npm install @ant-design/nextjs-registry --save
  - tailwindcss
  - react-icons
  - react-redux
@@ -12,7 +13,9 @@
     - 支持 ts：npm i --save-dev @types/react-syntax-highlighter
  - uuid 生成唯一 
  - prisma 实现数据库操作
-    - 
+ - openai
+    - azure
+    - DeepSeek: https://api-docs.deepseek.com/zh-cn/
 
 ##  启动项目
 npm run dev

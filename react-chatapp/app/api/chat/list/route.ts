@@ -17,6 +17,9 @@ export async function GET(request: NextRequest) {
         }
     })
 
+    // 获取当前返回的数据条数
+    const count = await prisma.chat.count()
+    const hasMore = count > page * 20
     // 返回对话列表
-    return NextResponse.json({ code: 0, data: { list } })
+    return NextResponse.json({ code: 0, data: { list, hasMore } })
 }

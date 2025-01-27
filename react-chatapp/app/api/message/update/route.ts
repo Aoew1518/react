@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         await prisma.chat.update({
             data: {
                 updateTime: new Date(),
-                title: "更新了对话"
+                title: data.title
             },
             where: {
                 id: data.chatId

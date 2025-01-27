@@ -29,6 +29,22 @@ export default function ChatInput() {
     const dispatch = useDispatch()
     const [messageApi, contextHolder] = message.useMessage();
 
+    // 订阅创建新对话事件，这里订阅推荐列表的事件，发送推介列表消息
+    useEffect(() => {
+        const callback = (data: string) => {
+            clickSendMessages(data)
+            // 收到事件通知时，重置当前页码，重新获取列表数据
+        };
+
+        // 订阅事件
+        eventBus.subscribe("createNewChat", callback);
+
+        // 组件卸载时取消订阅
+        return () => {
+            eventBus.unsubscribe("createNewChat", callback);
+        };
+    }, []);
+
     // 更新输入款所发送的消息所对应的消息列表的id
     useEffect(() => {
         if (chatIdRef.current === selectedChat?.id) {
@@ -66,7 +82,7 @@ export default function ChatInput() {
     }
 
     // 点击发送消息
-    async function clickSendMessages() {
+    async function clickSendMessages(content: string) {
         if (currentModel === 'GPT-4' || currentModel === 'gpt-35-turbo') {
             messageApi.info({
                 content: '该模型暂未开放，请选择deepseek-chat模型',
@@ -77,7 +93,7 @@ export default function ChatInput() {
         // 服务端请求用户信息
         const message: Message = await createOrUpdateMessage({
             role: "user",
-            content: messageText,
+            content,
             id: "",
             chatId: chatIdRef.current
         })
@@ -89,6 +105,81 @@ export default function ChatInput() {
         setMessageText("")
         // 发送消息请求
         sendMessage(messages)
+
+        if (!selectedChat?.title || selectedChat.title === '新对话') {
+            updateChatTitle(messages)
+        }
+    }
+
+    // 更新聊天的标题
+    async function updateChatTitle(messages: Message[]) {
+        const message: Message = {
+            id: "",
+            role: "user",
+            chatId: chatIdRef.current,
+            content: "使用5到10个字符直接返回这句话的简要主题，不要解释、不要标点、不要语气词、不要多余文本、如果没有主题则直接返回'新对话'",
+        }
+
+        // 获取聊天标题，给后面更新聊天标题用，防止请求过程中切换了标题而导致id错误
+        const chatId = chatIdRef.current
+        // 把聊天标题大致内容请求添加到消息列表
+        const body: MessageRequestBody = { messages: [...messages, message], model: currentModel }
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            // 把用户输入的消息包装成 json 格式
+            body: JSON.stringify(body)
+        })
+
+        // 状态码是否正常
+        if (!response.ok) {
+            console.error(response.statusText)
+            return
+        }
+        // 获取返回的消息是否存在
+        if (!response.body) {
+            console.error("body error")
+            return
+        }
+
+        // 获取返回的数据流
+        const reader = response.body.getReader()
+        // 从字节流解码为字符串
+        const decoder = new TextDecoder()
+        // 是否读取完成
+        let done = false
+        // 循环读取数据流，获得返回的对话主题title
+        let title = ''
+        // 循环读取数据流
+        while (!done) {
+            const result = await reader.read()
+            // 数据流是否读完
+            done = result.done
+            // 解码数据流为字符串
+            const chunk = decoder.decode(result.value)
+            title += chunk
+        }
+
+        const updateResponse = await fetch("/api/chat/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: chatId, title })
+        })
+
+        if (!updateResponse.ok) {
+            console.error(updateResponse.statusText)
+            return
+        }
+
+        const { code } = await updateResponse.json()
+        if (code === 0) {
+            // 更新成功，重置状态，发布一次订阅
+            eventBus.publish("fetchChatList");
+        }
     }
 
     // 发送消息
@@ -258,7 +349,7 @@ export default function ChatInput() {
                             disabled={messageText.trim() === '' || streamingId !== ''}
                             variant='primary'
                             onClick={() => {
-                                clickSendMessages()
+                                clickSendMessages(messageText)
                             }}
                         />
                     </div>

@@ -31,12 +31,12 @@ export default function ModelSelect() {
     const dispatch = useDispatch();
 
     function handleModelChange(model: any) {
-        if (model.id === 'GPT-4' || model.id === 'gpt-35-turbo') {
-            messageApi.info({
-                content: '该模型暂未开放，请选择deepseek-chat模型',
-                duration: 2,
-            })
-        }
+        // if (model.id === 'GPT-4' || model.id === 'gpt-35-turbo') {
+        //     messageApi.info({
+        //         content: '该模型暂未开放，请选择deepseek-chat模型',
+        //         duration: 2,
+        //     })
+        // }
         dispatch(setCurrentModel(model.id))
     }
 
@@ -58,8 +58,8 @@ export default function ModelSelect() {
                                 handleModelChange(item)
                             }}
                             className={`group hover:text-gray-900 hover:dark:text-gray-100 flex justify-center items-center space-x-2 py-2.5 min-w-[148px] text-sm font-medium border rounded-lg ${selected
-                                    ? "border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-                                    : "border-transparent text-gray-500"
+                                ? "border-gray-200 bg-white text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+                                : "border-transparent text-gray-500"
                                 }`}
                         >
                             <span

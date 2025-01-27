@@ -143,7 +143,6 @@ export default function ChatList() {
 
     useEffect(() => {
         const callback = () => {
-            console.log("fetchChatList");
             // 收到事件通知时，重置当前页码，重新获取列表数据
             pageRef.current = 1
             getChatListData();
@@ -166,7 +165,7 @@ export default function ChatList() {
             observer = new IntersectionObserver((entries) => {
                 // 滑动到底部时，加载更多数据
                 if (entries[0].isIntersecting && hasMoreRef.current) {
-                    console.log("滑动到底部fetchChatList")
+                    console.log("滑动到底部，发送fetchChatList")
                     getChatListData()
                 }
             })

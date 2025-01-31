@@ -65,7 +65,7 @@ export default function ChatInput() {
             body: JSON.stringify(message)
         })
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
         const { data } = await response.json()
@@ -135,12 +135,12 @@ export default function ChatInput() {
 
         // 状态码是否正常
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
         // 获取返回的消息是否存在
         if (!response.body) {
-            console.error("body error")
+            console.warn("body error")
             return
         }
 
@@ -171,7 +171,7 @@ export default function ChatInput() {
         })
 
         if (!updateResponse.ok) {
-            console.error(updateResponse.statusText)
+            console.warn(updateResponse.statusText)
             return
         }
 
@@ -201,12 +201,12 @@ export default function ChatInput() {
 
         // 状态码是否正常
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
         // 获取返回的消息是否存在
         if (!response.body) {
-            console.error("body error")
+            console.warn("body error")
             return
         }
 
@@ -268,7 +268,7 @@ export default function ChatInput() {
             // 接口调用失败则打印错误日志
             const result = await deleteMessage(lastMessage?.id || '')
             if (!result) {
-                console.error("delete error")
+                console.warn("delete error")
                 return
             }
 
@@ -289,7 +289,7 @@ export default function ChatInput() {
             }
         })
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
         const { code } = await response.json()

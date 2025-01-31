@@ -43,7 +43,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
         })
 
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
 
@@ -64,7 +64,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
         })
 
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
 

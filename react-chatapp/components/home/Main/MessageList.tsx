@@ -43,7 +43,7 @@ export default function MessageList() {
         })
 
         if (!response.ok) {
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
         const { data } = await response.json()

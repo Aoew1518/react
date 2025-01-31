@@ -4,8 +4,20 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// 用户模型
+model User {
+    id       Int    @id @default(autoincrement())
+    username String @unique
+    password String
+    // 用户和对话是一对多关系，一个用户可以有多个对话
+    Chat Chat[]
+}
+
 // 对话模型
 model Chat {
+    // 关联用户表
+    userId     Int
+    user       User      @relation(fields: [userId], references: [id])
     // id 字段是主键，类型为 String，默认值为 uuid()
     id         String    @id @default(uuid())
     title      String

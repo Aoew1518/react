@@ -118,7 +118,7 @@ export default function ChatList() {
 
         if (!response.ok) {
             loadingRef.current = false
-            console.error(response.statusText)
+            console.warn(response.statusText)
             return
         }
 

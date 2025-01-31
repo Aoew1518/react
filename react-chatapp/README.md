@@ -1,7 +1,7 @@
 # 仿 chatgpt 大模型对话项目
 ## react 18 + next
  - 通过 page + layout 来实现页面布局和路由跳转
- - App router
+ - App router: 将 antd 首屏样式按需抽离并植入到 HTML 中，以避免页面闪动的情况
     - antd: npm install @ant-design/nextjs-registry --save
  - tailwindcss
  - react-icons
@@ -16,6 +16,9 @@
  - openai
     - azure
     - DeepSeek: https://api-docs.deepseek.com/zh-cn/
+ - 登陆注册：
+    - bcryptjs：npm i --save-dev @types/bcryptjs
+    - jwt
 
 ##  启动项目
 npm run dev
@@ -59,6 +62,10 @@ npm install prisma --save-dev
 npx prisma init
 # 生成数据库
 npx prisma migrate dev --name init
+# 更新数据库
+npx prisma migrate dev
+# 清空数据库
+npx prisma migrate reset
 # 使用 sqlite3 命令查看数据库
 sqlite3 prisma/chatgpt-app.sqlite
 # 或者使用 prisma 的可视化工具查看数据表

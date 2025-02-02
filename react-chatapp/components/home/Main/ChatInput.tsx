@@ -26,6 +26,7 @@ export default function ChatInput() {
     // 保存对话id
     const chatIdRef = useRef("")
     const { messageList, streamingId, currentModel, selectedChat } = useSelector((state: any) => state.mainStore)
+    const { userId } = useSelector((state: any) => state.userStore);
     const dispatch = useDispatch()
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -62,7 +63,7 @@ export default function ChatInput() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(message)
+            body: JSON.stringify({userId, ...message})
         })
         if (!response.ok) {
             console.warn(response.statusText)
@@ -188,71 +189,76 @@ export default function ChatInput() {
         stopRef.current = false
         const body: MessageRequestBody = { messages, model: currentModel }
         const controller = new AbortController()
-        const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            // 通过 signal 传递一个 AbortController 实例，以便在需要时取消请求
-            signal: controller.signal,
-            // 把用户输入的消息包装成 json 格式
-            body: JSON.stringify(body)
-        })
-
-        // 状态码是否正常
-        if (!response.ok) {
-            console.warn(response.statusText)
-            return
-        }
-        // 获取返回的消息是否存在
-        if (!response.body) {
-            console.warn("body error")
-            return
-        }
-
-        // 请求成功后把服务端的消息添加到消息列表
-        const responseMessage: Message = await createOrUpdateMessage({
-            id: "",
-            role: "assistant",
-            content: "",
-            chatId: chatIdRef.current
-        })
-
-        // 添加一个空消息列表，后续请求时不断更新该消息内容
-        dispatch(addMessageList(responseMessage))
-        dispatch(setStreamingId(responseMessage.id))
-        // 获取返回的数据流
-        const reader = response.body.getReader()
-        // 从字节流解码为字符串
-        const decoder = new TextDecoder()
-        // 是否读取完成
-        let done = false
-        let content = ''
-        // 循环读取数据流
-        while (!done) {
-            // 如果停止生成则关闭数据流
-            if (stopRef.current) {
-                stopRef.current = false
-                // 关闭数据流，中止网络请求
-                controller.abort()
-                break
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                // 通过 signal 传递一个 AbortController 实例，以便在需要时取消请求
+                signal: controller.signal,
+                // 把用户输入的消息包装成 json 格式
+                body: JSON.stringify(body)
+            })
+            
+            // 状态码是否正常
+            if (!response.ok) {
+                console.warn(response.statusText)
+                return
             }
-            const result = await reader.read()
-            // 数据流是否读完
-            done = result.done
-            // 解码数据流为字符串
-            const chunk = decoder.decode(result.value)
-            content += chunk
-            // 读取过程中不断更新该消息内容，进行一个实时更新返回的消息
-            dispatch(updataMessageList({
-                ...responseMessage,
-                content: content
-            }))
+            // 获取返回的消息是否存在
+            if (!response.body) {
+                console.warn("body error")
+                return
+            }
+
+            // 请求成功后把服务端的消息添加到消息列表
+            const responseMessage: Message = await createOrUpdateMessage({
+                id: "",
+                role: "assistant",
+                content: "",
+                chatId: chatIdRef.current
+            })
+
+            // 添加一个空消息列表，后续请求时不断更新该消息内容
+            dispatch(addMessageList(responseMessage))
+            dispatch(setStreamingId(responseMessage.id))
+            // 获取返回的数据流
+            const reader = response.body.getReader()
+            // 从字节流解码为字符串
+            const decoder = new TextDecoder()
+            // 是否读取完成
+            let done = false
+            let content = ''
+            // 循环读取数据流
+            while (!done) {
+                // 如果停止生成则关闭数据流
+                if (stopRef.current) {
+                    stopRef.current = false
+                    // 关闭数据流，中止网络请求
+                    controller.abort()
+                    break
+                }
+                const result = await reader.read()
+                // 数据流是否读完
+                done = result.done
+                // 解码数据流为字符串
+                const chunk = decoder.decode(result.value)
+                content += chunk
+                // 读取过程中不断更新该消息内容，进行一个实时更新返回的消息
+                dispatch(updataMessageList({
+                    ...responseMessage,
+                    content: content
+                }))
+            }
+            // 读取完成，更新服务端消息内容
+            createOrUpdateMessage({ ...responseMessage, content })
+            // 重置消息流 id
+            dispatch(setStreamingId(''))
         }
-        // 读取完成，更新服务端消息内容
-        createOrUpdateMessage({ ...responseMessage, content })
-        // 重置消息流 id
-        dispatch(setStreamingId(''))
+        catch (error) {
+            console.error("网络错误，请求失败:", error);
+        }
     }
 
     // 重新发送

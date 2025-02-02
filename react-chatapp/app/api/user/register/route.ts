@@ -35,6 +35,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
         code: 0,
         message: "注册成功",
-        data: newUser,
+        data: {
+            ...newUser,
+            userId: newUser.id
+        },
     });
 }

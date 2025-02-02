@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
         code: 0,
         message: "登录成功",
         data: {
-            username: user.username,
+            userName: user.username,
+            userId: user.id,
         },
     });
 }

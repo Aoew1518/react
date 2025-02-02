@@ -3,13 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     const body = await request.json()
-    const { id, ...data } = body
+    const { id, userId,...data } = body
     // 如果没有chatId，则创建一个新对话
     if (!data.chatId) {
         // chat 属性是 prisma 数据库中的表名
         const chat = await prisma.chat.create({
             data: {
-                title: "新对话"
+                title: "新对话",
+                userId,
             }
         })
         // 将 chatId 设置为新创建的对话的 id
@@ -20,7 +21,6 @@ export async function POST(request: NextRequest) {
         await prisma.chat.update({
             data: {
                 updateTime: new Date(),
-                title: data.title
             },
             where: {
                 id: data.chatId

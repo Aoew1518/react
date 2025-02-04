@@ -33,7 +33,7 @@ export default function Menu() {
             icon={LuPanelLeftOpen}
             className={`${
                 isShowNav ? "opacity-0 pointer-events-none" : "opacity-100"
-            } fixed left-2 top-2 transition-opacity duration-500 ease-out`}
+            } fixed left-2 top-2`}
             variant='outline'
             onClick={() => dispatch(setIsShowNav(true))}
         />

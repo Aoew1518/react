@@ -4,18 +4,81 @@ import Navigation from "@/components/home/Navigation"
 import Main from "@/components/home/Main"
 import { useSelector, useDispatch } from 'react-redux'
 import { setUserId } from '@/store/modules/userStore';
+import { useEffect, useState } from 'react'
+import { Modal, Button } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 export default function Home() {
     const dispatch = useDispatch();
     const { themeMode } = useSelector((state: any) => state.navStore);
-    const userInfo = localStorage.getItem("userInfo");
-    const { userId } = userInfo ? JSON.parse(userInfo) : { userId: ""};
-    dispatch(setUserId(userId));
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('用户信息失效，请重新登录！');
+    // 初始化并从localStorage中获取用户信息
+    const [currentUserId, setCurrentUserId] = useState('');
+
+    // 全局监听storage变化
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const userId = getUserId();
+            if (!userId) {
+                setOpen(true);
+            }
+            else {
+                setCurrentUserId(userId);
+                dispatch(setUserId(userId));
+            }
+        };
+        handleStorageChange();
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
+    // 得到用户id
+    function getUserId() {
+        const userInfo = localStorage.getItem("userInfo");
+        const userId = userInfo ? JSON.parse(userInfo).userId : "";
+        return userId;
+    }
+
+    // 提示弹层确认
+    function handleOk() {
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+            window.location.href = '/login';
+        }, 2000);
+    };
 
     return (
-        <div className={`${themeMode} h-full flex`}>
-            <Navigation />
-            <Main />
-        </div>
+        <>
+            <Modal
+                title={
+                    <>
+                        <ExclamationCircleOutlined style={{ marginRight: 8, color: '#ffb300' }} />
+                        登录失效
+                    </>
+                }
+                closable={false}
+                open={open}
+                confirmLoading={confirmLoading}
+                footer={[
+                    <Button key="confirm" type="primary" loading={confirmLoading} onClick={handleOk}>
+                        确认
+                    </Button>
+                ]}
+            >
+                <p>{modalText}</p>
+            </Modal>
+            <div className={`${themeMode} h-full flex`}>
+                <Navigation />
+                <Main />
+            </div>
+        </>
     )
 }

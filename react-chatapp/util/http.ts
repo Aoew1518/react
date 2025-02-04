@@ -2,11 +2,11 @@
 import axios from 'axios'
 
 const httpInstance = axios.create({
-    baseURL: 'http://localhost:3000',
-    timeout: 5000,
+    baseURL: process.env.NEXT_PUBLIC_LOGIN_BASE_URL,
+    timeout: 50000,
     headers: {
         'Content-Type': 'application/json'
-    }
+    },
 })
 
 // axios请求拦截器
@@ -21,10 +21,16 @@ httpInstance.interceptors.request.use(config => {
 })
 
 // axios响应式拦截器
-httpInstance.interceptors.response.use(res => { 
+httpInstance.interceptors.response.use(res => {
+    console.log('res', res)
     return res
 }, (error) => {
-    return Promise.reject(error)
+    console.log('error', error)
+    if (error.response && error.response.status === 401) {
+        // Token 过期或无效，重定向到登录页面
+        window.location.href = '/login';
+    }
+    return Promise.reject(error);
 })
 
 export default httpInstance

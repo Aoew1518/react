@@ -98,6 +98,7 @@ export default function ChatList() {
     // 聊天列表
     const [chatList, setChatList] = useState<Chat[]>([])
     const { selectedChat } = useSelector((state: any) => state.mainStore)
+    const { userId } = useSelector((state: any) => state.userStore)
 
     // 得到分组好的列表
     const groupList = useMemo(() => {
@@ -112,7 +113,7 @@ export default function ChatList() {
         }
         loadingRef.current = true
 
-        const response = await fetch(`/api/chat/list?page=${pageRef.current}`, {
+        const response = await fetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {
             method: "GET"
         })
 
@@ -138,8 +139,10 @@ export default function ChatList() {
     }
 
     useEffect(() => {
-        getChatListData()
-    }, [])
+        if (userId) {
+            getChatListData()
+        }
+    }, [userId])
 
     useEffect(() => {
         const callback = () => {

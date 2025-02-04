@@ -1,30 +1,45 @@
 // nav 侧边栏
 "use client"
 
-// import { useAppContext } from "@/components/AppContext"
 import Menubar from "./Menubar"
 import Toolbar from "./Toolbar"
 import ChatList from "./ChatList"
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setIsShowNav } from '@/store/modules/navStore'
 
 export default function Navigation() {
-    // const {
-    //     state: { displayNavigation }
-    // } = useAppContext()
-
+    const dispatch = useDispatch()
     const { isShowNav } = useSelector((state: any) => state.navStore)
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 720) {
+                dispatch(setIsShowNav(false))
+            }
+            else {
+                dispatch(setIsShowNav(true))
+            }
+        };
+
+        // 初始检查
+        handleResize();
+
+        // 添加窗口大小变化监听器
+        window.addEventListener('resize', handleResize);
+
+        // 清理监听器
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
-        <nav
-            // className={`${
-            //     isShowNav ? "" : "hidden"
-            // } flex flex-col dark relative h-full w-[260px] bg-gray-900 text-gray-300 p-2`}
+        <nav          
             className={`${
-                isShowNav ? "translate-x-0" : "-translate-x-full hidden"
-              } flex flex-col dark relative h-full w-[260px] bg-gray-900 text-gray-300 p-2 transition-transform duration-500 ease-out`}
-            // className={`${
-            //     isShowNav ? "translate-x-0" : "-translate-x-full invisible"
-            // } flex flex-col dark absolute top-0 left-0 h-full w-[260px] bg-gray-900 text-gray-300 p-2 transition-all duration-500 ease-out z-10`}              
+                isShowNav ? 'transition-all duration-100 ease-out w-[260px]' : 'w-0 p-0'
+            } flex flex-col dark relative h-full bg-gray-900 text-gray-300 p-2`}
+            style={{ overflow: 'hidden' }}
         >
             <Menubar />
             <ChatList />

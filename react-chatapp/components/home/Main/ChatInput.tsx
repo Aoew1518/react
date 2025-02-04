@@ -4,7 +4,6 @@ import { PiLightningFill, PiStopBold } from "react-icons/pi"
 import { FiSend } from "react-icons/fi"
 import TextareaAutoSize from "react-textarea-autosize"
 import { useState, useRef, useEffect } from "react"
-// import { v4 as uuidv4 } from "uuid"
 import { Message, MessageRequestBody } from "@/types/chat"
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -36,7 +35,7 @@ export default function ChatInput() {
             clickSendMessages(data)
             // 收到事件通知时，重置当前页码，重新获取列表数据
         };
-
+ 
         // 订阅事件
         eventBus.subscribe("createNewChat", callback);
 
@@ -44,7 +43,7 @@ export default function ChatInput() {
         return () => {
             eventBus.unsubscribe("createNewChat", callback);
         };
-    }, []);
+    }, [userId]);
 
     // 更新输入款所发送的消息所对应的消息列表的id
     useEffect(() => {
@@ -63,7 +62,10 @@ export default function ChatInput() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({userId, ...message})
+            body: JSON.stringify({
+                userId: userId,
+                ...message
+            })
         })
         if (!response.ok) {
             console.warn(response.statusText)
@@ -91,7 +93,9 @@ export default function ChatInput() {
             })
             return
         }
+
         // 服务端请求用户信息
+        // 这里id为空是以为id不应该前端去生成，而是由服务端生成，前端只是传递了个id参数给服务端
         const message: Message = await createOrUpdateMessage({
             role: "user",
             content,
@@ -212,6 +216,7 @@ export default function ChatInput() {
                 return
             }
 
+            // 这里创建一个assistant消息
             // 请求成功后把服务端的消息添加到消息列表
             const responseMessage: Message = await createOrUpdateMessage({
                 id: "",
@@ -224,6 +229,7 @@ export default function ChatInput() {
             dispatch(addMessageList(responseMessage))
             dispatch(setStreamingId(responseMessage.id))
             // 获取返回的数据流
+            console.log('response', response)
             const reader = response.body.getReader()
             // 从字节流解码为字符串
             const decoder = new TextDecoder()
@@ -334,7 +340,7 @@ export default function ChatInput() {
                             </Button>
                         ))}
                     <div className='flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] py-4'>
-                        <div className='mx-3 mb-2.5'>
+                        <div className='mx-3 mb-2.5 text-primary-500'>
                             <PiLightningFill />
                         </div>
                         {/* 消息输入框 */}

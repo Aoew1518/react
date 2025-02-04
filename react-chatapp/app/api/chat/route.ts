@@ -2,8 +2,14 @@
 import { NextRequest, } from "next/server";
 import { MessageRequestBody } from "@/types/chat"
 import openai from "@/lib/openai";
+import jwt from "jsonwebtoken";
 
 export async function POST(request: NextRequest) {
+    const token = request.cookies.get('token');
+    if (!token) {
+        return new Response(JSON.stringify({ error: 'UnAuthorized, please login!' }), { status: 401 });
+    }
+
     try {
         // 从请求中获取从客户端传递的 json 数据，提取用户的文本内容
         const { messages, model } = (await request.json()) as MessageRequestBody

@@ -18,7 +18,8 @@
     - DeepSeek: https://api-docs.deepseek.com/zh-cn/
  - 登陆注册：
     - bcryptjs：npm i --save-dev @types/bcryptjs
-    - jwt
+    - jwt：npm install jsonwebtoken --save-dev @types/jsonwebtoken
+
 
 ##  启动项目
 npm run dev

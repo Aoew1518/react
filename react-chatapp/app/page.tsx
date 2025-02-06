@@ -11,11 +11,14 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 export default function Home() {
     const dispatch = useDispatch();
     const { themeMode } = useSelector((state: any) => state.navStore);
+    const { userId } = useSelector((state: any) => state.userStore);
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('用户信息失效，请重新登录！');
     // 初始化并从localStorage中获取用户信息
     const [currentUserId, setCurrentUserId] = useState('');
+    // 追踪组件挂载状态
+    const [isMounted, setIsMounted] = useState(false);
 
     // 全局监听storage变化
     useEffect(() => {
@@ -37,6 +40,22 @@ export default function Home() {
             window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
+    
+    useEffect(() => {
+        // 组件挂载完成
+        setIsMounted(true);
+        // 销毁阶段，取消监听
+        return () => {
+            setIsMounted(false);
+        };
+    }, []);
+
+    // 全局监听 userId 变化
+    useEffect(() => {
+        if (isMounted && !userId) {
+            setOpen(true); // 只有在组件已挂载后，userId 为空时才打开模态框
+        }
+    }, [userId, isMounted]);
 
     // 得到用户id
     function getUserId() {
@@ -49,6 +68,7 @@ export default function Home() {
     function handleOk() {
         setConfirmLoading(true);
         setTimeout(() => {
+            localStorage.removeItem("userInfo");
             setOpen(false);
             setConfirmLoading(false);
             window.location.href = '/login';

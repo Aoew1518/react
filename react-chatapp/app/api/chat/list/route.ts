@@ -2,16 +2,11 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-    const token = request.cookies.get('token');
-    if (!token) {
-        return new Response(JSON.stringify({ error: 'UnAuthorized, please login!', status: 401 }));
-    }
-    
     const param = request.nextUrl.searchParams.get("page")
     const userId = request.nextUrl.searchParams.get("userId")
 
     if (!userId) {
-        return new Response(JSON.stringify({ error: '缺少用户id信息!', status: 400 }));
+        return new Response(JSON.stringify({ error: '缺少用户id信息!', code: -1 }), { status: 401 });
     }
 
     // 转换数字类型，如果为空则默认为1，即第一页内容

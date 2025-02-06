@@ -82,8 +82,8 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
             onClick={() => {
                 onSelected(item)
             }}
-            className={`relative group flex items-center p-3 space-x-3 cursor-pointer rounded-md hover:bg-gray-800 ${
-                selected ? "bg-gray-800 pr-[3.5em]" : ""
+            className={`relative group flex items-center p-3 space-x-3 cursor-pointer rounded-md ${
+                selected ? "pr-[3.5em] bg-blue-100 dark:bg-slate-800" : "hover:bg-blue-50 dark:hover:bg-slate-800"
             }`}
         >
             {/* 删除状态时，把消息图标换成全部删除图标 */}
@@ -103,8 +103,8 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
                 <div className='relative flex-1 text-sm truncate'>
                     {item.title}
                     <span
-                        className={`group-hover:from-gray-800 absolute right-0 inset-y-0 w-8 bg-gradient-to-l ${
-                            selected ? "from-gray-800" : "from-gray-900"
+                        className={`dark:group-hover:from-gray-800 absolute right-0 inset-y-0 w-8 bg-gradient-to-l ${
+                            selected ? "from-blue-100 dark:from-gray-800" : "dark:from-gray-900"
                         }`}
                     ></span>
                 </div>

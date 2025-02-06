@@ -15,6 +15,8 @@ import {
 } from '@/store/modules/mainStore'
 import eventBus from "@/store/eventBus";
 import { message } from "antd";
+import sendFetch from "@/util/fetch"
+import { setUserId } from '@/store/modules/userStore';
 
 // 聊天输入框
 export default function ChatInput() {
@@ -35,7 +37,7 @@ export default function ChatInput() {
             clickSendMessages(data)
             // 收到事件通知时，重置当前页码，重新获取列表数据
         };
- 
+
         // 订阅事件
         eventBus.subscribe("createNewChat", callback);
 
@@ -57,18 +59,16 @@ export default function ChatInput() {
 
     // 服务端创建消息或者更新消息
     async function createOrUpdateMessage(message: Message) {
-        const response = await fetch("/api/message/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+        const optinion = {
             body: JSON.stringify({
                 userId: userId,
                 ...message
             })
-        })
-        if (!response.ok) {
-            console.warn(response.statusText)
+        }
+        const response = await sendFetch("/api/message/update", optinion)
+        if (!response) {
+            // 清空用户信息，要求重新登录
+            dispatch(setUserId(''));
             return
         }
         const { data } = await response.json()
@@ -129,28 +129,19 @@ export default function ChatInput() {
         const chatId = chatIdRef.current
         // 把聊天标题大致内容请求添加到消息列表
         const body: MessageRequestBody = { messages: [...messages, message], model: currentModel }
-        const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+        let optinion = {
             // 把用户输入的消息包装成 json 格式
-            body: JSON.stringify(body)
-        })
-
-        // 状态码是否正常
-        if (!response.ok) {
-            console.warn(response.statusText)
-            return
+            body: JSON.stringify(body),
         }
-        // 获取返回的消息是否存在
-        if (!response.body) {
-            console.warn("body error")
+        const response = await sendFetch(`/api/chat`, optinion)
+        if (!response) {
+            // 清空用户信息，要求重新登录
+            dispatch(setUserId(''));
             return
         }
 
         // 获取返回的数据流
-        const reader = response.body.getReader()
+        const reader = response?.body?.getReader()
         // 从字节流解码为字符串
         const decoder = new TextDecoder()
         // 是否读取完成
@@ -159,24 +150,21 @@ export default function ChatInput() {
         let title = ''
         // 循环读取数据流
         while (!done) {
-            const result = await reader.read()
+            const result = await reader?.read() 
             // 数据流是否读完
-            done = result.done
+            done = result?.done || false
             // 解码数据流为字符串
-            const chunk = decoder.decode(result.value)
+            const chunk = decoder.decode(result?.value)
             title += chunk
         }
 
-        const updateResponse = await fetch("/api/chat/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+        optinion = {
             body: JSON.stringify({ id: chatId, title })
-        })
-
-        if (!updateResponse.ok) {
-            console.warn(updateResponse.statusText)
+        }
+        const updateResponse = await sendFetch("/api/chat/update", optinion)
+        if (!updateResponse) {
+            // 清空用户信息，要求重新登录
+            dispatch(setUserId(''));
             return
         }
 
@@ -194,25 +182,15 @@ export default function ChatInput() {
         const body: MessageRequestBody = { messages, model: currentModel }
         const controller = new AbortController()
         try {
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                // 通过 signal 传递一个 AbortController 实例，以便在需要时取消请求
+            const optinion = {
                 signal: controller.signal,
-                // 把用户输入的消息包装成 json 格式
                 body: JSON.stringify(body)
-            })
-            
-            // 状态码是否正常
-            if (!response.ok) {
-                console.warn(response.statusText)
-                return
             }
-            // 获取返回的消息是否存在
-            if (!response.body) {
-                console.warn("body error")
+            // 获取字符流
+            const response = await sendFetch("/api/chat", optinion)
+            if (!response) {
+                // 清空用户信息，要求重新登录
+                dispatch(setUserId(''));
                 return
             }
 
@@ -230,7 +208,7 @@ export default function ChatInput() {
             dispatch(setStreamingId(responseMessage.id))
             // 获取返回的数据流
             console.log('response', response)
-            const reader = response.body.getReader()
+            const reader = response?.body?.getReader()
             // 从字节流解码为字符串
             const decoder = new TextDecoder()
             // 是否读取完成
@@ -245,11 +223,11 @@ export default function ChatInput() {
                     controller.abort()
                     break
                 }
-                const result = await reader.read()
+                const result = await reader?.read()
                 // 数据流是否读完
-                done = result.done
+                done = result?.done || false
                 // 解码数据流为字符串
-                const chunk = decoder.decode(result.value)
+                const chunk = decoder.decode(result?.value)
                 content += chunk
                 // 读取过程中不断更新该消息内容，进行一个实时更新返回的消息
                 dispatch(updataMessageList({
@@ -294,19 +272,15 @@ export default function ChatInput() {
 
     // 删除消息
     async function deleteMessage(id: string) {
-        const response = await fetch(`/api/message/delete?id=${id}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        if (!response.ok) {
-            console.warn(response.statusText)
+        const response = await sendFetch(`/api/message/delete?id=${id}`)
+        if (!response) {
+            // 清空用户信息，要求重新登录
+            dispatch(setUserId(''));
             return
         }
         const { code } = await response.json()
         // 为 0 则删除成功
-        return code === 0
+        return code && code === 0
     }
 
     return (

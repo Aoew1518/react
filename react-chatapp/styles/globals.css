@@ -55,3 +55,7 @@ body {
 .animated-underline:hover {
     background-size: 0 2px, 100% 2px;
 }
+
+.theme-nav {
+    background-color: #f9fbff;
+}

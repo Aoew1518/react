@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import eventBus from "@/store/eventBus";
 import { useRef } from "react"
 import { setSelectedChat } from "@/store/modules/mainStore"
+import { setUserId } from '@/store/modules/userStore';
+import sendFetch from "@/util/fetch"
 
 export default function ChatList() {
     // 测试数据
@@ -113,19 +115,16 @@ export default function ChatList() {
         }
         loadingRef.current = true
 
-        const response = await fetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {
-            method: "GET"
-        })
-
-        if (!response.ok) {
-            loadingRef.current = false
-            console.warn(response.statusText)
+        const response = await sendFetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {method: "GET"})
+        if (!response) {
+            // 清空用户信息，要求重新登录
+            dispatch(setUserId(''));
             return
         }
 
-        const { data } = await response.json()
-        hasMoreRef.current = data.hasMore
-        
+        const { data } = await response?.json()
+        hasMoreRef.current = data?.hasMore || false
+
         // 更新当前对话列表
         if (pageRef.current === 1) {
             setChatList(data.list)
@@ -158,7 +157,7 @@ export default function ChatList() {
         return () => {
             eventBus.unsubscribe("fetchChatList", callback);
         };
-    }, []);
+    }, [userId]);
 
     useEffect(() => {
         let observer: IntersectionObserver | null = null
@@ -181,14 +180,14 @@ export default function ChatList() {
                 observer.unobserve(div)
             }
         }
-    }, [])
+    }, [userId])
 
     return (
         <div className='flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto'>
             {groupList.map(([date, list]) => {
                 return (
                     <div key={date}>
-                        <div className='sticky top-0 z-10 p-3 text-sm bg-gray-900 text-gray-500'>
+                        <div className='sticky top-0 z-10 p-3 text-sm dark:bg-gray-900 dark:text-gray-500 font-semibold'>
                             {date}
                         </div>
                         <ul>
@@ -206,6 +205,7 @@ export default function ChatList() {
                                 )
                             })}
                         </ul>
+                        {groupList.length !== 1 && (<div className='w-full h-6'></div>)}
                     </div>
                 )
             })}

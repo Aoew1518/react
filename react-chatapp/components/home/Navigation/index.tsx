@@ -35,11 +35,10 @@ export default function Navigation() {
     }, []);
 
     return (
-        <nav          
-            className={`${
-                isShowNav ? 'transition-all duration-100 ease-out w-[260px]' : 'w-0 p-0'
-            } flex flex-col dark relative h-full bg-gray-900 text-gray-300 p-2`}
-            style={{ overflow: 'hidden' }}
+        <nav
+            className={`flex flex-col relative overflow-hidden h-full theme-nav dark:bg-gray-900 dark:text-gray-300
+                ${isShowNav ? 'transition-all duration-100 ease-out w-[260px] p-2' : 'w-0 p-0'}
+            `}
         >
             <Menubar />
             <ChatList />

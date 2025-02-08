@@ -28,5 +28,6 @@ export default async function sendFetch(url: string, options?: RequestInit) {
         return
     }
 
-    return response; // 返回完整的响应对象
+    // 返回完整的响应对象
+    return response;
 }

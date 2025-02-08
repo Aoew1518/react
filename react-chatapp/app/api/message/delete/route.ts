@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { message } from "antd";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -8,6 +9,16 @@ export async function POST(request: NextRequest) {
     if (!id) {
         return NextResponse.json({ code: -1 })
     }
+
+    const messageToDelete = await prisma.message.findUnique({
+        where: { id },
+    });
+
+    // 没有找到消息，则返回错误码
+    if (!messageToDelete) {
+        NextResponse.json({ message: "Message not found", code: -1 })
+    }
+
     // 否则删除数据库中的消息记录
     await prisma.message.delete({
         where: {

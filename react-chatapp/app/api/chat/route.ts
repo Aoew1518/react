@@ -3,6 +3,13 @@ import { NextRequest, } from "next/server";
 import { MessageRequestBody } from "@/types/chat"
 import openai from "@/lib/openai";
 
+// 超时返回
+const timeoutPromise = new Promise<Response>((_, reject) => {
+    setTimeout(() => {
+        reject(new Response("网络超时，请稍后再试！", { status: 504 }));
+    }, 10000);
+});
+
 export async function POST(request: NextRequest) {
     try {
         // 从请求中获取从客户端传递的 json 数据，提取用户的文本内容
@@ -13,7 +20,7 @@ export async function POST(request: NextRequest) {
         // 使用数据流的形式返回，即一个字符地返回
         const stream = new ReadableStream({
             async start(controller) {
-                const completion  = await openai.chat.completions.create({
+                const completion = await openai.chat.completions.create({
                     messages: [{ role: "system", content: "You are a helpful assistant." }, ...messages],
                     model: model || "deepseek-chat",
                     // 限制生成文本的最大长度
@@ -34,7 +41,14 @@ export async function POST(request: NextRequest) {
                 controller.close()
             }
         })
-        return new Response(stream)
+
+        // 使用Promise.race来处理超时
+        return Promise
+            .race([new Response(stream), timeoutPromise])
+            .catch(error => {
+                // 返回超时的错误响应
+                return error;
+            });
     }
     catch (error) {
         return new Response("服务器错误，请稍后再试！", { status: 500 });

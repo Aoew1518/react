@@ -19,7 +19,7 @@ import sendFetch from "@/util/fetch"
 import { setUserId } from '@/store/modules/userStore';
 
 // 聊天输入框
-export default function ChatInput() {
+export default function ChatInput({hideButton = false}) {
     // 记录用户输入消息
     const [messageText, setMessageText] = useState("")
     // 记录用户是否正在输入，useRef 的值更新不会导致组件重渲染。
@@ -205,7 +205,7 @@ export default function ChatInput() {
 
             // 添加一个空消息列表，后续请求时不断更新该消息内容
             dispatch(addMessageList(responseMessage))
-            dispatch(setStreamingId(responseMessage.id))
+            dispatch(setStreamingId(responseMessage?.id))
             // 获取返回的数据流
             console.log('response', response)
             const reader = response?.body?.getReader()
@@ -255,9 +255,11 @@ export default function ChatInput() {
         ) {
             // 获取最后一个消息
             const lastMessage = messages[messages.length - 1];
+            console.log(' 最后一个消息',lastMessage)
             // 接口调用失败则打印错误日志
-            const result = await deleteMessage(lastMessage?.id || '')
-            if (!result) {
+            const isDelete = await deleteMessage(lastMessage?.id || '')
+            console.log(' 重新发送',isDelete)
+            if (!isDelete) {
                 console.warn("delete error")
                 return
             }
@@ -267,20 +269,17 @@ export default function ChatInput() {
             // messages.splice(messages.length - 1, 1)
             messages.pop()
         }
+        // 再重新请求一条消息
         sendMessage(messages)
     }
 
     // 删除消息
     async function deleteMessage(id: string) {
         const response = await sendFetch(`/api/message/delete?id=${id}`)
-        if (!response) {
-            // 清空用户信息，要求重新登录
-            dispatch(setUserId(''));
-            return
-        }
-        const { code } = await response.json()
+        console.log('最后的id和删除消息',id, response)
+        const { code } = await response?.json()
         // 为 0 则删除成功
-        return code && code === 0
+        return code === 0
     }
 
     return (
@@ -289,7 +288,7 @@ export default function ChatInput() {
             <div className='absolute bottom-0 inset-x-0 bg-gradient-to-b from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] to-[54.73%] pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]'>
                 <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
                     {/* 是否显示按钮，正在生成则显示停止生成，否则显示重新生成 */}
-                    {messageList.length !== 0 &&
+                    {messageList.length !== 0 && !hideButton &&
                         (streamingId !== "" ? (
                             <Button
                                 icon={PiStopBold}
@@ -297,7 +296,7 @@ export default function ChatInput() {
                                 onClick={() => {
                                     stopRef.current = true
                                 }}
-                                className='font-medium'
+                                className='font-medium z-10'
                             >
                                 停止生成
                             </Button>
@@ -308,7 +307,7 @@ export default function ChatInput() {
                                 onClick={() => {
                                     resend()
                                 }}
-                                className='font-medium'
+                                className='font-medium z-10'
                             >
                                 重新生成
                             </Button>

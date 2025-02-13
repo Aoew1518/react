@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { setMessageList } from "@/store/modules/mainStore"
 import { useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
+import ChatInput from "./ChatInput"
 
 export default function MessageList() {
     // 返回消息测试数据
@@ -62,37 +63,39 @@ export default function MessageList() {
     }, [selectedChat])
 
     return (
-        <div className='w-full pt-10 pb-48 dark:text-gray-300'>
-            <ul>
-                {messageList.map((message: Message, index: number) => {
-                    const isUser = message?.role === "user"
-                    const isDefaultMessage = message === undefined
-                    return (
-                        <li
-                            key={message?.id || uuidv4()}
-                            className={`${
-                                isUser
-                                    ? "bg-white dark:bg-gray-800"
-                                    : "bg-gray-100 dark:bg-gray-700"
-                            } ${index === messageList.length - 1 ? 'mb-10' : ''}`}
-                        >
-                            <div className='w-full max-w-4xl mx-auto flex space-x-6 px-4 py-6 text-lg'>
-                                <div className='text-3xl leading-[1]'>
-                                    {/* 展现用户头像或者 openai 图标 */}
-                                    {isUser ? <FaRegUser /> : <SiOpenai />}
+        <>
+            <div className='overflow-y-auto w-full min-w-[492px] pt-10 pb-48 dark:text-gray-300'>
+                <ul>
+                    {messageList.map((message: Message, index: number) => {
+                        const isUser = message?.role === "user"
+                        const isDefaultMessage = message === undefined
+                        return (
+                            <li
+                                key={message?.id || uuidv4()}
+                                className={`${isUser
+                                        ? "bg-white dark:bg-gray-800"
+                                        : "bg-gray-100 dark:bg-gray-700"
+                                    } ${index === messageList.length - 1 ? 'mb-10' : ''}`}
+                            >
+                                <div className='w-full max-w-4xl mx-auto flex space-x-6 px-4 py-6 text-lg'>
+                                    <div className='text-3xl leading-[1]'>
+                                        {/* 展现用户头像或者 openai 图标 */}
+                                        {isUser ? <FaRegUser /> : <SiOpenai />}
+                                    </div>
+                                    <div className='flex-1'>
+                                        {/* 展现 markdown 消息，并末尾显示光标 */}
+                                        {/* 结测试，这里的插值写法不要换行，不然会样式错乱 */}
+                                        <Markdown>
+                                            {isDefaultMessage ? defaultMessage : `${message.content}${message.id === streamingId ? "▍" : ""}`}
+                                        </Markdown>
+                                    </div>
                                 </div>
-                                <div className='flex-1'>
-                                    {/* 展现 markdown 消息，并末尾显示光标 */}
-                                    {/* 结测试，这里的插值写法不要换行，不然会样式错乱 */}
-                                    <Markdown>
-                                        {isDefaultMessage ? defaultMessage :`${message.content}${message.id === streamingId ? "▍" : ""}`}
-                                    </Markdown>
-                                </div>
-                            </div>
-                        </li>
-                    )
-                })}
-            </ul>
-        </div>
+                            </li>
+                        )
+                    })}
+                </ul>
+            </div>
+            <ChatInput />
+        </>
     )
 }

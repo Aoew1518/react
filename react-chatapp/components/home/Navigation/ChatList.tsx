@@ -1,6 +1,6 @@
 import { groupByDate } from "@/common/util"
 import { Chat } from "@/types/chat"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, memo } from "react"
 import ChatItem from "./ChatItem"
 import { useDispatch, useSelector } from "react-redux";
 import eventBus from "@/store/eventBus";
@@ -9,7 +9,7 @@ import { setSelectedChat } from "@/store/modules/mainStore"
 import { setUserId } from '@/store/modules/userStore';
 import sendFetch from "@/util/fetch"
 
-export default function ChatList() {
+function ChatList() {
     // 测试数据
     // const [chatList, setChatList] = useState<Chat[]>([
     //     {
@@ -213,3 +213,5 @@ export default function ChatList() {
         </div>
     )
 }
+
+export default memo(ChatList)

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Form, Input, message, Spin } from 'antd';
+import { Button, Form, Input, message, Spin, Checkbox } from 'antd';
 import { useRouter } from 'next/navigation';
 import { userLogin } from '@/types/user';
 import { useDispatch } from 'react-redux';
@@ -16,6 +16,8 @@ export default function LoginRegisterPage() {
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    // 同意用户协议
+    const [agree, setAgree] = useState(false);
     const router = useRouter();
     // 用来显示跳转的加载提示
     const [isRedirecting, setIsRedirecting] = useState(false);
@@ -25,10 +27,15 @@ export default function LoginRegisterPage() {
         setFormType(formType === 'login' ? 'register' : 'login');
         setUsername('');
         setPassword('');
+        setAgree(false);
     }
 
     // 登陆注册表单提交
     async function onFinish(values: userLogin) {
+        if (!agree) {
+            messageApi.info('请同意用户协议和隐私政策！');
+            return;
+        }
         setLoading(true);
         try {
             // 根据 formType 决定请求的 API
@@ -79,7 +86,6 @@ export default function LoginRegisterPage() {
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
                             </Form.Item>
-
                             <Form.Item
                                 name="password"
                                 label="密码"
@@ -91,7 +97,6 @@ export default function LoginRegisterPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                             </Form.Item>
-
                             <Form.Item>
                                 <Button
                                     type="primary"
@@ -105,7 +110,7 @@ export default function LoginRegisterPage() {
                                 </Button>
                             </Form.Item>
                         </Form>
-                        <div className="mt-4 text-center">
+                        <div className="relative top-[-10px] text-center">
                             {formType === 'login' ? (
                                 <>
                                     <span>没有账号? </span>
@@ -129,6 +134,14 @@ export default function LoginRegisterPage() {
                                     </Button>
                                 </>
                             )}
+                        </div>
+                        <div className='relative text-center text-xs'>
+                        <Checkbox
+                            checked={agree}
+                            onChange={(e) => setAgree(e.target.checked)} // 更新同意框状态
+                        >
+                            我同意 <a href="/policy?itemKey=1">用户协议</a> 和 <a href="/policy?itemKey=2">隐私政策</a>
+                        </Checkbox>
                         </div>
                     </Spin>
                 </div>

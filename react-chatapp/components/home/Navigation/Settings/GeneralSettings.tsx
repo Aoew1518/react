@@ -24,7 +24,7 @@ export default function LanguageAndThemeSettings() {
                 <Col>语言</Col>
                 <Col>
                     <Select
-                        defaultValue={language}
+                        value={language}
                         onChange={(value) => handleLanguageChange(value)}
                         style={{ width: 110 }}
                     >
@@ -42,7 +42,7 @@ export default function LanguageAndThemeSettings() {
                 <Col>主题</Col>
                 <Col>
                     <Select
-                        defaultValue={themeMode}
+                        value={themeMode}
                         onChange={handleThemeChange}
                         style={{ width: 110 }}
                     >

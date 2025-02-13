@@ -45,12 +45,15 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        // $transaction 事务可以保证数据的一致性，要么同时成功，要么同时失败
-        await prisma.$transaction([deleteMessages, deleteChat])
+        try {
+            // $transaction 事务可以保证数据的一致性，要么同时成功，要么同时失败
+            await prisma.$transaction([deleteMessages, deleteChat])
+            return NextResponse.json({ message: "删除所有聊天记录成功", code: 0 });
+        } catch (error) {
+            return NextResponse.json({ error: "删除所有聊天记录失败，请稍后再试", code: -1 }, { status: 500 });
+        }
     }
     else {
         return NextResponse.json({ code: -1, message: "缺少Id参数" });
     }
-    
-    return NextResponse.json({ code: 0, message: 'success' })
 }

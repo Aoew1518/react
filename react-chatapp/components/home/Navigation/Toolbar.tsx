@@ -1,14 +1,12 @@
 // 侧边栏低部工具栏
 import NativeButton from "@/components/common/Button"
-import GeneralSettings from "./Settings/GeneralSettings"
-import AccountInfo from "./Settings/AccountInfo"
+import RightDrawer from "./Settings"
 import { MdLightMode, MdDarkMode, MdInfo } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux';
-import { setThemeMode } from "@/store/modules/navStore"
+import { setThemeMode, setShowRightDrawer } from "@/store/modules/navStore"
 import { setSelectedChat } from '@/store/modules/mainStore'
-import { Dropdown, Modal, message, Drawer, Radio } from 'antd';
+import { Dropdown, Modal, message, Button } from 'antd';
 import type { MenuProps } from 'antd';
-import type { CheckboxGroupProps } from 'antd/es/checkbox';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { SettingOutlined, UserOutlined, ClearOutlined, LogoutOutlined } from '@ant-design/icons';
 import { userUrl } from "@/util/base64"
@@ -21,13 +19,23 @@ export default function Toolbar() {
     const { themeMode } = useSelector((state: any) => state.navStore);
     const { userId } = useSelector((state: any) => state.userStore);
     const [open, setOpen] = useState(false);
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [contentText, setContentText] = useState('');
-    const [titleText, setTitleText] = useState('');
+    // const [titleText, setTitleText] = useState('');
     const [selectKey, setSelectKey] = useState('');
     const [messageApi, contextHolder] = message.useMessage();
-    const [selectRadio, setSelectRadio] = useState<'generalSettings' | 'accountInfo'>('generalSettings');
+    // 是否出现modal组件的取消按钮和右上角的叉号
+    const [showCancel, setShowCancel] = useState(true);
+    // 确认按钮的类型
+    const [confirmBtnType, setConfirmBtnType] = useState('primary');
+
+    // color="danger"
+    // variant="solid"
+
+    // 确认按钮的回调，用于一些特殊场景下的modal的确认回调
+    // let confirmCallback = () => { }
+    const [confirmCallback, setConfirmCallback] = useState(() => {});
 
     const items: MenuProps['items'] = [
         {
@@ -71,20 +79,16 @@ export default function Toolbar() {
         },
     ];
 
-    const options: CheckboxGroupProps<string>['options'] = [
-        { label: '通用设置', value: 'generalSettings' },
-        { label: '账户信息', value: 'accountInfo' },
-    ]
-
     // 通用处理函数
     function handleMenuClick(key: string) {
-        setSelectKey(key)
+        setSelectKey(key);
         switch (key) {
             case '0':
+                openSetting()
                 setContentText('个人信息');
                 break;
             case '1':
-                hangdleSetting()
+                openSetting()
                 setContentText('系统设置');
                 break;
             case '2':
@@ -114,20 +118,30 @@ export default function Toolbar() {
             case '3':
                 handleLogout()
                 break;
+            // case 'updatePassword':
+            //     handleLogout()
+            //     break;
+            // case 'deleteAccount':
+            //     console.log('confirmCallback', confirmCallback);
+            //     confirmCallback;
+            //     console.log('删除账号');
+            //     break;
             default:
                 break;
         }
     };
 
     function handleCancel() {
-        setDrawerOpen(false);
+        setRightDrawerOpen(false);
         setOpen(false);
     };
 
-    function hangdleSetting() {
-        setDrawerOpen(true);
-    }
+    // 打开右侧抽屉组件
+    function openSetting() {
+        dispatch(setShowRightDrawer(true));
+    };
 
+    // 清空所有聊天
     async function handleDeleteAll() {
         setConfirmLoading(true);
         const response = await sendFetch(`/api/chat/delete?userId=${userId}`)
@@ -157,46 +171,64 @@ export default function Toolbar() {
         }, 2000);
     };
 
+    // // 触发modal组件，传递给右抽屉组件使用
+    // function triggerModel(content: string, showCancel?: boolean, props?: { functionType?: string, confirmBtnType?: string, callback?: () => void }) {
+    //     // 修改moadl的内容
+    //     setContentText(content);
+    //     // 默认显示取消按钮
+    //     setShowCancel(showCancel ?? true);
+    //     const { functionType, confirmBtnType, callback } = props ?? {};
+    //     // 设置当前的modal的key
+    //     functionType && setSelectKey(functionType);
+    //     // 设置当前modal的确认按钮类型
+    //     confirmBtnType && setConfirmBtnType(confirmBtnType);
+    //     // 设置modal确定按钮的回调函数
+    //     callback && (setConfirmCallback(callback));
+    //     // callback && (confirmCallback = callback);
+    //     confirmCallback
+    //     // console.log('callback', callback());
+    //     console.log('confirmCallback', confirmCallback);
+    //     // confirmCallback && confirmCallback();
+    //     // 打开modal组件
+    //     setOpen(true);
+    // }
+
     return (
         <>
             {contextHolder}
             <Modal
+                zIndex={9999}
                 title={
                     <>
                         <ExclamationCircleOutlined style={{ marginRight: 8, color: '#ffb300' }} />
                         {contentText}
                     </>
                 }
-                closable={true}
+                closable={showCancel}
                 open={open}
                 onOk={handleOk}
                 onCancel={handleCancel}
                 confirmLoading={confirmLoading}
                 okText={'确认'}
                 cancelText={'取消'}
+                // 根据 modalOptions 动态控制取消按钮
+                footer={showCancel ? undefined : [
+                    <Button
+                        key="submit"
+                        variant="outlined"
+                        color="primary"
+                        loading={confirmLoading}
+                        onClick={handleOk}
+                    >
+                        确认
+                    </Button>
+                ]}
             >
-                <p>{'确认' + `${contentText}`}</p>
-
+                <p>{`${contentText}`}</p>
             </Modal>
-            <Drawer
-                title="系统设置"
-                open={drawerOpen}
-                onClose={handleCancel}
-            >
-                <Radio.Group
-                    block
-                    options={options}
-                    defaultValue="generalSettings"
-                    optionType="button"
-                    buttonStyle="solid"
-                    onChange={(e) => setSelectRadio(e.target.value)}
-                />
-                {selectRadio === 'generalSettings' ? (
-                    <GeneralSettings/>
-                ) : (
-                    <AccountInfo/>
-                )}
-            </Drawer>
+            <RightDrawer
+                // triggerModel={triggerModel}
+            />
             <div className='absolute bottom-0 left-0 right-0 dark:bg-gray-800 flex p-2 justify-between hover:bg-blue-50 dark:hover:bg-gray-800'>
                 <Dropdown
                     menu={{ items }}

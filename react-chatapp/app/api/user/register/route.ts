@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 // 注册接口
 export async function POST(request: NextRequest) {
@@ -32,7 +33,12 @@ export async function POST(request: NextRequest) {
         },
     });
 
-    return NextResponse.json({
+    // 生成 JWT token
+    const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET as string;
+    const token = jwt.sign({ userId: newUser.id }, jwtSecret, { expiresIn: '2h' });
+
+    // 设置 Cookie
+    const response = NextResponse.json({
         code: 0,
         message: "注册成功",
         data: {
@@ -40,4 +46,8 @@ export async function POST(request: NextRequest) {
             userId: newUser.id
         },
     });
+
+    response.cookies.set('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+
+    return response;
 }

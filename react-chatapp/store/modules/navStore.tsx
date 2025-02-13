@@ -7,6 +7,7 @@ const navStore = createSlice({
         isShowNav: true,
         themeMode: 'light',
         language: 'chinese',
+        showRightDrawer: false,
     },
     reducers: {
         setIsShowNav(state, action) {
@@ -17,6 +18,9 @@ const navStore = createSlice({
         },
         setLanguage(state, action) {
             state.language = action.payload
+        },
+        setShowRightDrawer(state, action) {
+            state.showRightDrawer = action.payload
         }
     }
 });
@@ -25,5 +29,6 @@ export const {
     setIsShowNav,
     setThemeMode,
     setLanguage,
+    setShowRightDrawer,
 } = navStore.actions;
 export default navStore.reducer;

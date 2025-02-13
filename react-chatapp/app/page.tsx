@@ -2,6 +2,7 @@
 "use client"
 import Navigation from "@/components/home/Navigation"
 import Main from "@/components/home/Main"
+import SimpleNavigation from "@/components/home/SimpleNavigation"
 import { useSelector, useDispatch } from 'react-redux'
 import { setUserId } from '@/store/modules/userStore';
 import { useEffect, useState } from 'react'
@@ -11,6 +12,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 export default function Home() {
     const dispatch = useDispatch();
     const { themeMode } = useSelector((state: any) => state.navStore);
+    const { isShowNav } = useSelector((state: any) => state.navStore);
     const { userId } = useSelector((state: any) => state.userStore);
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -78,6 +80,7 @@ export default function Home() {
     return (
         <>
             <Modal
+                zIndex={9998}
                 title={
                     <>
                         <ExclamationCircleOutlined style={{ marginRight: 8, color: '#ffb300' }} />
@@ -97,6 +100,7 @@ export default function Home() {
             </Modal>
             <div className={`${themeMode} h-full flex`}>
                 <Navigation />
+                {!isShowNav && <SimpleNavigation />}
                 <Main />
             </div>
         </>

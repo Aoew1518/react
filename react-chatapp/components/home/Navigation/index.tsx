@@ -17,9 +17,6 @@ export default function Navigation() {
             if (window.innerWidth < 720) {
                 dispatch(setIsShowNav(false))
             }
-            else {
-                dispatch(setIsShowNav(true))
-            }
         };
 
         // 初始检查

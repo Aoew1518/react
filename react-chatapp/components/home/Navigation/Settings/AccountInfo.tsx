@@ -1,12 +1,16 @@
-import { Select, Row, Col } from 'antd';
-import { useSelector, useDispatch } from 'react-redux'
+import { Row, Col } from 'antd';
+import { useDispatch } from 'react-redux'
 import { setLanguage, setThemeMode } from '@/store/modules/navStore';
 import Button from '@/components/common/Button';
 
-export default function LanguageAndThemeSettings() {
+export default function LanguageAndThemeSettings({
+    userInfoManagementClick,
+    passwordManagementClick
+}: {
+    userInfoManagementClick: Function,
+    passwordManagementClick: Function,
+}) {
     const dispatch = useDispatch();
-    const { language, themeMode } = useSelector((state: any) => state.navStore);
-    const { Option } = Select;
 
     function handleLanguageChange(value: string) {
         dispatch(setLanguage(value));
@@ -22,9 +26,19 @@ export default function LanguageAndThemeSettings() {
                 align="middle"
                 justify="space-between"
             >
-                <Col>账号昵称</Col>
+                <Col>账号设置</Col>
                 <Col>
-                    <Button variant='text'>Aoew</Button>
+                    <Button variant='text' onClick={() => userInfoManagementClick()}>Aoew</Button>
+                </Col>
+            </Row>
+            <hr className='my-4 opacity-50' />
+            <Row
+                align="middle"
+                justify="space-between"
+            >
+                <Col>修改密码</Col>
+                <Col>
+                    <Button variant='text' onClick={() => passwordManagementClick()}>查看</Button>
                 </Col>
             </Row>
             <hr className='my-4 opacity-50' />
@@ -34,7 +48,12 @@ export default function LanguageAndThemeSettings() {
             >
                 <Col>用户协议</Col>
                 <Col>
-                    <Button variant='text'>查看</Button>
+                    <Button
+                        variant='text'
+                        onClick={() => {
+                            window.open('/policy?itemKey=1');
+                        }}
+                    >查看</Button>
                 </Col>
             </Row>
             <hr className='my-4 opacity-50' />
@@ -44,27 +63,12 @@ export default function LanguageAndThemeSettings() {
             >
                 <Col>隐私政策</Col>
                 <Col>
-                    <Button variant='text'>查看</Button>
-                </Col>
-            </Row>
-            <hr className='my-4 opacity-50' />
-            <Row
-                align="middle"
-                justify="space-between"
-            >
-                <Col>隐私政策</Col>
-                <Col>
-                    <Button variant='text'>查看</Button>
-                </Col>
-            </Row>
-            <hr className='my-4 opacity-50' />
-            <Row
-                align="middle"
-                justify="space-between"
-            >
-                <Col>密码管理</Col>
-                <Col>
-                    <Button variant='text'>查看</Button>
+                    <Button
+                        variant='text'
+                        onClick={() => {
+                            window.open('/policy?itemKey=2');
+                        }}
+                    >查看</Button>
                 </Col>
             </Row>
         </div>

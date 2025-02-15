@@ -5,6 +5,7 @@
 - 通过 page + layout 来实现页面布局和路由跳转
 - App router: 将 antd 首屏样式按需抽离并植入到 HTML 中，以避免页面闪动的情况
   - antd: npm install @ant-design/nextjs-registry --save
+  - antd-img-crop：用于配合antd的upload组件实现图片裁剪功能
 - tailwindcss
 - react-icons
 - react-redux
@@ -21,6 +22,7 @@
 - 登陆注册：
   - bcryptjs：npm i --save-dev @types/bcryptjs
   - jwt：npm install jsonwebtoken --save-dev @types/jsonwebtoken
+  - js-cookie 读cookie使用
 
 ## 启动项目
 

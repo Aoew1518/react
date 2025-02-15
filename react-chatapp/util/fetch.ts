@@ -1,8 +1,12 @@
+// import Cookies from 'js-cookie';
+
 export default async function sendFetch(url: string, options?: RequestInit) {
-    // 添加默认的请求头和其他选项
+
+    // const token = Cookies.get('token');
     const response = await fetch(url, {
         method: "POST",
         headers: {
+            // 'Authorization': `Bearer ${token}`,
             "Content-Type": "application/json"
         },
         // 携带cookie

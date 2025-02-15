@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     try {
         // $transaction 事务可以保证数据的一致性，要么同时成功，要么同时失败
-        await prisma.$transaction([deleteMessages, deleteChat, deleteUser]);
+        // await prisma.$transaction([deleteMessages, deleteChat, deleteUser]);
         return NextResponse.json({ message: "注销用户成功", code: 0 });
     } catch (error) {
         console.error("Error deleting user data:", error);

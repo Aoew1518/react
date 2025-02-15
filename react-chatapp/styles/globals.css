@@ -59,3 +59,99 @@ body {
 .theme-nav {
     background-color: #f9fbff;
 }
+
+/* antd下拉菜单暗黑样式 */
+.dark .dropdown {
+    ul {
+        background-color: rgb(55, 65, 81) !important;
+
+        .ant-dropdown-menu-item {
+            color: #e5e7eb !important;
+
+            &:hover {
+                background-color: rgb(17, 24, 39) !important;
+            }
+        }
+
+        .ant-dropdown-menu-item-divider {
+            background-color: #e5e7eb47 !important;
+        }
+    }
+
+    .ant-dropdown-arrow::before {
+        background-color: rgb(55, 65, 81) !important;
+    }
+}
+
+/* antd抽屉一层暗黑样式 */
+.dark {
+    /* 头部叉号 */
+    .anticon-close {
+        color: #e5e7eb !important;
+    }
+
+    .ant-drawer-header {
+        border-bottom: 1px solid #e5e7eb3f  !important;
+    }
+
+    .ant-select-selector {
+        background-color: #1f2937 !important;
+        border-color: #374151 !important;
+        color: #e5e7eb !important;
+    }
+
+    .ant-select-arrow {
+        color: #e5e7eb !important;
+    }
+
+    .ant-select-selection-item {
+        color: #e5e7eb !important;
+    }
+
+    .ant-select-dropdown {
+        background-color: rgb(17, 24, 39) !important;
+        color: #e5e7eb !important;
+        .ant-select-item {
+            color: #e5e7eb !important;
+        }
+        .ant-select-item-option-selected{
+            background-color: #1f2937 !important;
+        }
+    }
+}
+
+/* antd单选按钮 */
+.dark {
+    .ant-radio-button-wrapper {
+        color: #e5e7eb !important;
+        border-color: rgb(17, 24, 39) !important;
+        background: rgb(17, 24, 39) !important;
+    }
+
+    .ant-radio-button-wrapper-checked {
+        color: #e5e7eb !important;
+        border-color: rgb(17, 24, 39) !important;
+        background: #374151 !important;
+    }
+
+    .ant-radio-button-wrapper-checked::before {
+        background: rgb(17, 24, 39) !important;
+    }
+}
+
+/* antd按钮和输入框 */
+.dark {
+    .ant-btn-color-primary {
+        color: #e5e7eb !important;
+        background: #374151 !important;
+        box-shadow: none !important;
+    }
+
+    .ant-btn-color-primary:hover {
+        background: rgb(17, 24, 39)  !important;
+    }
+
+    .ant-form-item-required {
+        color: #e5e7eb !important;
+    }
+}

@@ -4,10 +4,12 @@ import Navigation from "@/components/home/Navigation"
 import Main from "@/components/home/Main"
 import SimpleNavigation from "@/components/home/SimpleNavigation"
 import { useSelector, useDispatch } from 'react-redux'
-import { setUserId } from '@/store/modules/userStore';
+import { setUserId, setUserName, setUserAvatar } from '@/store/modules/userStore';
 import { useEffect, useState } from 'react'
 import { Modal, Button } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import eventBus from '@/store/eventBus';
+import sendFetch from "@/util/fetch";
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -17,21 +19,46 @@ export default function Home() {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('用户信息失效，请重新登录！');
-    // 初始化并从localStorage中获取用户信息
-    const [currentUserId, setCurrentUserId] = useState('');
     // 追踪组件挂载状态
     const [isMounted, setIsMounted] = useState(false);
 
-    // 全局监听storage变化
+    // 初始化或更新用户信息
+    useEffect(() => {
+        const handleUserUpdate = async() => {
+            const response = await sendFetch('/api/user/get', {
+                method: 'GET',
+            })
+            if (!response) {
+                // 清空用户信息，要求重新登录
+                dispatch(setUserId(''));
+                return
+            }
+
+            const {data} = await response?.json()
+            dispatch(setUserAvatar(data?.avatar || ''));
+        };
+
+        // 初始化用户信息
+        handleUserUpdate()
+        // 订阅事件
+        eventBus.subscribe('userUpdated', handleUserUpdate);
+
+        // 清理订阅
+        return () => {
+            eventBus.unsubscribe('userUpdated', handleUserUpdate);
+        };
+    }, []);
+
+    // 全局监听storage变化，storage处理静态的数据，用户id和账户是不会变化的
     useEffect(() => {
         const handleStorageChange = () => {
-            const userId = getUserId();
+            const {userId, userName} = getUserInfo();
             if (!userId) {
                 setOpen(true);
             }
             else {
-                setCurrentUserId(userId);
-                dispatch(setUserId(userId));
+                dispatch(setUserId(userId) || "");
+                dispatch(setUserName(userName || ""));
             }
         };
         handleStorageChange();
@@ -42,7 +69,7 @@ export default function Home() {
             window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
-    
+
     useEffect(() => {
         // 组件挂载完成
         setIsMounted(true);
@@ -55,15 +82,17 @@ export default function Home() {
     // 全局监听 userId 变化
     useEffect(() => {
         if (isMounted && !userId) {
-            setOpen(true); // 只有在组件已挂载后，userId 为空时才打开模态框
+            // 只有在组件已挂载后，userId 为空时才打开模态框
+            setOpen(true);
         }
     }, [userId, isMounted]);
 
-    // 得到用户id
-    function getUserId() {
+    // 得到用户信息
+    function getUserInfo() {
         const userInfo = localStorage.getItem("userInfo");
         const userId = userInfo ? JSON.parse(userInfo).userId : "";
-        return userId;
+        const userName = userInfo ? JSON.parse(userInfo).userName : "";
+        return {userId, userName};
     }
 
     // 提示弹层确认
@@ -79,30 +108,32 @@ export default function Home() {
 
     return (
         <>
-            <Modal
-                zIndex={9998}
-                title={
-                    <>
-                        <ExclamationCircleOutlined style={{ marginRight: 8, color: '#ffb300' }} />
-                        登录失效
-                    </>
-                }
-                closable={false}
-                open={open}
-                confirmLoading={confirmLoading}
-                footer={[
-                    <Button key="confirm" type="primary" loading={confirmLoading} onClick={handleOk}>
-                        确认
-                    </Button>
-                ]}
-            >
-                <p>{modalText}</p>
-            </Modal>
-            <div className={`${themeMode} h-full flex`}>
-                <Navigation />
-                {!isShowNav && <SimpleNavigation />}
-                <Main />
-            </div>
+            <body className={`${themeMode}`}>
+                <div className="h-full flex">
+                    <Modal
+                        zIndex={9998}
+                        title={
+                            <>
+                                <ExclamationCircleOutlined style={{ marginRight: 8, color: '#ffb300' }} />
+                                登录失效
+                            </>
+                        }
+                        closable={false}
+                        open={open}
+                        confirmLoading={confirmLoading}
+                        footer={[
+                            <Button key="confirm" type="primary" loading={confirmLoading} onClick={handleOk}>
+                                确认
+                            </Button>
+                        ]}
+                    >
+                        <p>{modalText}</p>
+                    </Modal>
+                    <Navigation />
+                    {!isShowNav && <SimpleNavigation />}
+                    <Main />
+                </div>
+            </body>
         </>
     )
 }

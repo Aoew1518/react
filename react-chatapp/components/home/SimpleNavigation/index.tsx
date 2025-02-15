@@ -7,6 +7,9 @@ import { useDispatch } from 'react-redux';
 import { setIsShowNav } from "@/store/modules/navStore"
 import { Space, Button, Tooltip } from "antd";
 import { antdButtonStyle } from "@/components/common/AntdButtonStyle";
+import {
+    setSelectedChat
+} from '@/store/modules/mainStore'
 
 export default function SimpleNavigation() {
     const dispatch = useDispatch();
@@ -34,7 +37,7 @@ export default function SimpleNavigation() {
                         type="text"
                         size="large"
                         className={antdButtonStyle}
-                        onClick={() => dispatch(setIsShowNav(true))}
+                        onClick={() => dispatch(dispatch(setSelectedChat(null)))}
                     >
                         <TbMessageCirclePlus className="text-2xl" />
                     </Button>

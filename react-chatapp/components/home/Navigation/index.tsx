@@ -34,7 +34,7 @@ export default function Navigation() {
     return (
         <nav
             className={`flex flex-col relative overflow-hidden h-full theme-nav dark:bg-gray-900 dark:text-gray-300
-                ${isShowNav ? 'transition-all duration-100 ease-out w-[260px] p-2' : 'w-0 p-0'}
+                ${isShowNav ? 'transition-all duration-100 ease-out w-[260px] p-2' : ' w-0 p-0'}
             `}
         >
             <Menubar />

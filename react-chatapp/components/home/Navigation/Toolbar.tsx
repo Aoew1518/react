@@ -17,7 +17,7 @@ import eventBus from "@/store/eventBus";
 export default function Toolbar() {
     const dispatch = useDispatch();
     const { themeMode } = useSelector((state: any) => state.navStore);
-    const { userId } = useSelector((state: any) => state.userStore);
+    const { userId, userName, userAvatar } = useSelector((state: any) => state.userStore);
     const [open, setOpen] = useState(false);
     const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -27,15 +27,6 @@ export default function Toolbar() {
     const [messageApi, contextHolder] = message.useMessage();
     // 是否出现modal组件的取消按钮和右上角的叉号
     const [showCancel, setShowCancel] = useState(true);
-    // 确认按钮的类型
-    const [confirmBtnType, setConfirmBtnType] = useState('primary');
-
-    // color="danger"
-    // variant="solid"
-
-    // 确认按钮的回调，用于一些特殊场景下的modal的确认回调
-    // let confirmCallback = () => { }
-    const [confirmCallback, setConfirmCallback] = useState(() => {});
 
     const items: MenuProps['items'] = [
         {
@@ -118,14 +109,6 @@ export default function Toolbar() {
             case '3':
                 handleLogout()
                 break;
-            // case 'updatePassword':
-            //     handleLogout()
-            //     break;
-            // case 'deleteAccount':
-            //     console.log('confirmCallback', confirmCallback);
-            //     confirmCallback;
-            //     console.log('删除账号');
-            //     break;
             default:
                 break;
         }
@@ -171,28 +154,6 @@ export default function Toolbar() {
         }, 2000);
     };
 
-    // // 触发modal组件，传递给右抽屉组件使用
-    // function triggerModel(content: string, showCancel?: boolean, props?: { functionType?: string, confirmBtnType?: string, callback?: () => void }) {
-    //     // 修改moadl的内容
-    //     setContentText(content);
-    //     // 默认显示取消按钮
-    //     setShowCancel(showCancel ?? true);
-    //     const { functionType, confirmBtnType, callback } = props ?? {};
-    //     // 设置当前的modal的key
-    //     functionType && setSelectKey(functionType);
-    //     // 设置当前modal的确认按钮类型
-    //     confirmBtnType && setConfirmBtnType(confirmBtnType);
-    //     // 设置modal确定按钮的回调函数
-    //     callback && (setConfirmCallback(callback));
-    //     // callback && (confirmCallback = callback);
-    //     confirmCallback
-    //     // console.log('callback', callback());
-    //     console.log('confirmCallback', confirmCallback);
-    //     // confirmCallback && confirmCallback();
-    //     // 打开modal组件
-    //     setOpen(true);
-    // }
-
     return (
         <>
             {contextHolder}
@@ -236,18 +197,19 @@ export default function Toolbar() {
                     placement="topLeft"
                     arrow
                     overlayStyle={{ marginBottom: '35px' }}
+                    rootClassName={`dropdown`}
                 >
                     <a
                         className="flex"
                         onClick={(e) => e.preventDefault()}
                     >
                         <div className="flex items-center gap-2 cursor-pointer">
-                            <img src={`${userUrl}`} className="w-8 h-8 rounded-full" />
-                            <span>Aoew</span>
+                            <img src={userAvatar || userUrl} className="w-8 h-8 rounded-full" />
+                            <span>{userName}</span>
                         </div>
                     </a>
                 </Dropdown>
-
+                <div className="flex items-center gap-2"></div>
                 <div>
                     <NativeButton
                         icon={"dark" === "dark" ? MdDarkMode : MdLightMode}

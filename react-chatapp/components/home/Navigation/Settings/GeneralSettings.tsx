@@ -34,7 +34,7 @@ export default function LanguageAndThemeSettings() {
                     </Select>
                 </Col>
             </Row>
-            <hr className='my-4 opacity-50'/>
+            <hr className='my-4 opacity-50 dark:opacity-30'/>
             <Row
                 align="middle"
                 justify="space-between"

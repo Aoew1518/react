@@ -43,13 +43,14 @@ export async function POST(request: NextRequest) {
         data: {
             userName: user.username,
             userId: user.id,
+            avatar: user.avatar
         },
     });
 
     // 设置 httpOnly 和 secure 属性
     // httpOnly：为 true 时，表示这个 Cookie 不能通过 document.cookie 来访问，防止跨站脚本攻击（XSS）
     // secure：为 true 时，表示这个 Cookie 只能通过 HTTPS 连接发送，在 HTTP 连接中，浏览器不会发送这个 Cookie
-    response.cookies.set('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    response.cookies.set('token', token, { httpOnly: false, secure: process.env.NODE_ENV === 'production' });
 
     return response;
 }

@@ -1,5 +1,5 @@
 import { Row, Col } from 'antd';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { setLanguage, setThemeMode } from '@/store/modules/navStore';
 import Button from '@/components/common/Button';
 
@@ -11,6 +11,7 @@ export default function LanguageAndThemeSettings({
     passwordManagementClick: Function,
 }) {
     const dispatch = useDispatch();
+    const { userName } = useSelector((state: any) => state.userStore);
 
     function handleLanguageChange(value: string) {
         dispatch(setLanguage(value));
@@ -28,7 +29,7 @@ export default function LanguageAndThemeSettings({
             >
                 <Col>账号设置</Col>
                 <Col>
-                    <Button variant='text' onClick={() => userInfoManagementClick()}>Aoew</Button>
+                    <Button variant='text' onClick={() => userInfoManagementClick()}>{userName}</Button>
                 </Col>
             </Row>
             <hr className='my-4 opacity-50' />

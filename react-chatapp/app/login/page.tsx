@@ -5,7 +5,7 @@ import { Button, Form, Input, message, Spin, Checkbox } from 'antd';
 import { useRouter } from 'next/navigation';
 import { userLogin } from '@/types/user';
 import { useDispatch } from 'react-redux';
-import { setUserId } from '@/store/modules/userStore';
+import { setUserId, setUserName, setUserAvatar } from '@/store/modules/userStore';
 import httpInstance from '@/util/http';
 
 export default function LoginRegisterPage() {
@@ -45,6 +45,8 @@ export default function LoginRegisterPage() {
             if (response.data.code === 0) {
                 const userId = response.data?.data?.userId || '';
                 dispatch(setUserId(userId));
+                dispatch(setUserName(response.data?.data?.userName || ''));
+                dispatch(setUserAvatar(response.data?.data?.avatar || ''));
                 localStorage.setItem('userInfo', JSON.stringify(response.data.data));
                 message.success(`${formType === 'login' ? '登录' : '注册'}成功！`);
                 setIsRedirecting(true);

@@ -16,14 +16,14 @@ export default function RootLayout({
         // 但仍然保留 useContext 的逻辑代码，以提供学习使用
         <Provider store={store}>
             <html lang='en'>
-                <body>
+                {/* <body> */}
                     {/* <AppContextProvider>
                         <EventBusContextProvider>
                             {children}
                         </EventBusContextProvider>
                     </AppContextProvider> */}
                     {children}
-                </body>
+                {/* </body> */}
             </html>
         </Provider>
     )

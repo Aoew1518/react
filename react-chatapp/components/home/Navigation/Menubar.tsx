@@ -1,6 +1,6 @@
 // import { useAppContext } from "@/components/AppContext"
 import Button from "@/components/common/Button"
-import { ActionType } from "@/reducers/AppReducer"
+// import { ActionType } from "@/reducers/AppReducer"
 import { HiPlus } from "react-icons/hi"
 import { LuPanelLeftClose } from "react-icons/lu";
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ import { setIsShowNav } from "@/store/modules/navStore"
 export default function Menubar() {
     // const { dispatch } = useAppContext()
     const dispatch = useDispatch();
-    const { messageList, selectedChat } = useSelector((state: any) => state.mainStore)
+    // const { messageList, selectedChat } = useSelector((state: any) => state.mainStore)
 
     return (
         <div className='flex space-x-3'>

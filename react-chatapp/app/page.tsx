@@ -14,7 +14,7 @@ import sendFetch from "@/util/fetch";
 export default function Home() {
     const dispatch = useDispatch();
     const { themeMode } = useSelector((state: any) => state.navStore);
-    const { isShowNav } = useSelector((state: any) => state.navStore);
+    const { isShowNav, isShowMaskNav } = useSelector((state: any) => state.navStore)
     const { userId } = useSelector((state: any) => state.userStore);
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -130,7 +130,8 @@ export default function Home() {
                         <p>{modalText}</p>
                     </Modal>
                     <Navigation />
-                    {!isShowNav && <SimpleNavigation />}
+                    {/* 隐藏导航栏且没有遮罩或者显示遮罩时显示简单导航 */}
+                    {(!isShowNav && !isShowMaskNav) && <SimpleNavigation />}
                     <Main />
                 </div>
             </body>

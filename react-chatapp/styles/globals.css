@@ -148,10 +148,50 @@ body {
     }
 
     .ant-btn-color-primary:hover {
-        background: rgb(17, 24, 39)  !important;
+        background: rgb(17, 24, 39) !important;
     }
 
     .ant-form-item-required {
         color: #e5e7eb !important;
+    }
+}
+
+/* antd modal按钮 */
+.dark {
+    .ant-modal-content {
+        background-color: rgb(53, 63, 83) !important;
+
+        .ant-modal-title {
+            background-color: rgb(53, 63, 83) !important;
+            color: #e5e7eb !important;
+        }
+        
+        .ant-modal-body {
+            color: #e5e7eb !important;
+        }
+
+        .ant-modal-footer {
+            .ant-btn {
+                color: #e5e7eb !important;
+            }
+
+            .ant-btn-color-default {
+                background: rgb(80 88 107) !important;
+                border: none !important;
+            }
+
+            .ant-btn-color-primary {
+                background: rgb(80 88 107) !important;
+                border: none !important;
+            }
+
+            .ant-btn-color-default:hover {
+                background: #60708b !important;
+            }
+
+            .ant-btn-color-primary:hover {
+                background: #60708b !important;
+            }
+        }        
     }
 }

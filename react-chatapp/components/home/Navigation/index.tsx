@@ -6,16 +6,30 @@ import Toolbar from "./Toolbar"
 import ChatList from "./ChatList"
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setIsShowNav } from '@/store/modules/navStore'
+import { setIsShowNav, setIsShowMaskNav } from '@/store/modules/navStore'
 
 export default function Navigation() {
     const dispatch = useDispatch()
-    const { isShowNav } = useSelector((state: any) => state.navStore)
-
+    const { isShowNav, isShowMaskNav } = useSelector((state: any) => state.navStore)
+    const NAV_STYLE = {
+        PUBLIC_STYLE: 'flex flex-col overflow-hidden h-full theme-nav dark:bg-gray-900 dark:text-gray-300 z-[52]',
+        SHOW_FULL_WIDTH_STYLE: 'relative transition-all duration-100 ease-out w-[260px] p-2',
+        HIDDEN_FULL_WIDTH_STYLE: 'relative w-0 p-0',
+        SHOW_LACK_WIDTH_STYLE: 'absolute left-0 transition-all duration-200 ease-out w-[260px] p-2',
+        HIDDEN_LACK_WIDTH_STYLE: 'absolute left-[-260px] transition-all duration-200 ease-out w-[260px] p-2',
+    }
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 720) {
+            let innerWidth = window.innerWidth
+            if (innerWidth < 1200) {
                 dispatch(setIsShowNav(false))
+            }
+
+            if (innerWidth < 767) {
+                dispatch(setIsShowMaskNav(true))
+            }
+            else {
+                dispatch(setIsShowMaskNav(false))
             }
         };
 
@@ -32,14 +46,27 @@ export default function Navigation() {
     }, []);
 
     return (
-        <nav
-            className={`flex flex-col relative overflow-hidden h-full theme-nav dark:bg-gray-900 dark:text-gray-300
-                ${isShowNav ? 'transition-all duration-100 ease-out w-[260px] p-2' : ' w-0 p-0'}
-            `}
-        >
-            <Menubar />
-            <ChatList />
-            <Toolbar />
-        </nav>
-    )
+        <>
+            {(isShowNav && isShowMaskNav) && (
+                <div
+                    className="fixed inset-0 bg-black opacity-50 z-[51]"
+                    onClick={() => dispatch(setIsShowNav(false))}
+                />
+            )}
+            <nav
+                className={
+                    NAV_STYLE.PUBLIC_STYLE
+                    + " "
+                    + (isShowNav && isShowMaskNav ? NAV_STYLE.SHOW_LACK_WIDTH_STYLE : "")
+                    + (isShowNav && !isShowMaskNav ? NAV_STYLE.SHOW_FULL_WIDTH_STYLE : "")
+                    + (!isShowNav && isShowMaskNav ? NAV_STYLE.HIDDEN_LACK_WIDTH_STYLE : "")
+                    + (!isShowNav && !isShowMaskNav ? NAV_STYLE.HIDDEN_FULL_WIDTH_STYLE : "")
+                }
+            >
+                <Menubar />
+                <ChatList />
+                <Toolbar />
+            </nav>
+        </>
+    );
 }

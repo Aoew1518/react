@@ -10,6 +10,7 @@ import { antdButtonStyle } from "@/components/common/AntdButtonStyle";
 import {
     setSelectedChat
 } from '@/store/modules/mainStore'
+import ChatDropdown from "../Navigation/ChatDropdown"
 
 export default function SimpleNavigation() {
     const dispatch = useDispatch();
@@ -50,14 +51,17 @@ export default function SimpleNavigation() {
                 className="w-full p-2 flex flex-col items-center"
             >
                 <Tooltip placement="right" title="系统设置">
-                    <Button
-                        type="text"
-                        size="large"
-                        className={antdButtonStyle}
-                        onClick={() => dispatch(setIsShowNav(true))}
+                    <ChatDropdown
+                        arrow={false}
                     >
-                        <IoSettingsOutline className="text-2xl" />
-                    </Button>
+                        <Button
+                            type="text"
+                            size="large"
+                            className={antdButtonStyle}
+                        >
+                            <IoSettingsOutline className="text-2xl" />
+                        </Button>
+                    </ChatDropdown>
                 </Tooltip>
             </Space>
         </div>

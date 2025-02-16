@@ -47,6 +47,7 @@ export default function LoginRegisterPage() {
                 dispatch(setUserId(userId));
                 dispatch(setUserName(response.data?.data?.userName || ''));
                 dispatch(setUserAvatar(response.data?.data?.avatar || ''));
+                localStorage.removeItem('userInfo');
                 localStorage.setItem('userInfo', JSON.stringify(response.data.data));
                 message.success(`${formType === 'login' ? '登录' : '注册'}成功！`);
                 setIsRedirecting(true);

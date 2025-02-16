@@ -11,9 +11,7 @@ import { useState, useEffect } from "react";
 import ImgCrop from 'antd-img-crop';
 import sendFetch from "@/util/fetch";
 import { updatePassWord } from "@/types/user"
-import NativeButton from '@/components/common/Button';
-import { userUrl } from "@/util/base64"
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { defaultUserAvatar } from "@/util/base64"
 import eventBus from '@/store/eventBus'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -50,7 +48,7 @@ export default function RightDrawer() {
             uid: '-1',
             name: 'avatar.png',
             status: 'done',
-            url: userUrl,
+            url: defaultUserAvatar,
         },
     ]);
 

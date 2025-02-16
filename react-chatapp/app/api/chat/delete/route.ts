@@ -28,6 +28,10 @@ export async function POST(request: NextRequest) {
             }
         })
 
+        if (!chats.length) {
+            return NextResponse.json({ message: "没有找到相关聊天记录，请稍后再试！", code: -1 })
+        }
+
         // 获取查找的 chat 表中的获取所有聊天的 id
         const chatIds = chats.map(chat => chat.id);
 
@@ -48,9 +52,9 @@ export async function POST(request: NextRequest) {
         try {
             // $transaction 事务可以保证数据的一致性，要么同时成功，要么同时失败
             await prisma.$transaction([deleteMessages, deleteChat])
-            return NextResponse.json({ message: "删除所有聊天记录成功", code: 0 });
+            return NextResponse.json({ message: "删除所有聊天记录成功！", code: 0 });
         } catch (error) {
-            return NextResponse.json({ error: "删除所有聊天记录失败，请稍后再试", code: -1 }, { status: 500 });
+            return NextResponse.json({ message: "删除所有聊天记录失败，请稍后再试", code: -1 }, { status: 500 });
         }
     }
     else {

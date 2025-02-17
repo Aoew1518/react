@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import ImgCrop from 'antd-img-crop';
 import sendFetch from "@/util/fetch";
 import { updatePassWord } from "@/types/user"
-import { defaultUserAvatar } from "@/util/base64"
+import { defaultUserAvatar } from "@/util/avatar"
 import eventBus from '@/store/eventBus'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];

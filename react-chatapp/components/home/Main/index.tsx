@@ -10,7 +10,7 @@ export default function Main() {
     const { selectedChat } = useSelector((state: any) => state.mainStore)
 
     return (
-        <div className='flex-1 relative overflow-hidden min-w-[492px]'>
+        <div className='flex-1 relative overflow-hidden min-w-[375px]'>
             <Menu />
             <main className='overflow-y-auto flex flex-col w-full h-full bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 pb-[60px]'>
                 {!selectedChat?.id ? <Welcome /> : <MessageList />}

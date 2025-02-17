@@ -4,7 +4,7 @@ import ChatDropdown from "./ChatDropdown"
 import { MdLightMode, MdDarkMode, MdInfo } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux';
 import { setThemeMode } from "@/store/modules/navStore"
-import { defaultUserAvatar } from "@/util/base64"
+import { defaultUserAvatar } from "@/util/avatar"
 
 export default function Toolbar() {
     const dispatch = useDispatch();

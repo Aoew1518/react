@@ -64,7 +64,7 @@ export default function MessageList() {
 
     return (
         <>
-            <div className='overflow-y-auto w-full min-w-[492px] pt-10 pb-48 dark:text-gray-300'>
+            <div className='overflow-y-auto w-full min-w-[375px] pb-44 dark:text-gray-300'>
                 <ul>
                     {messageList.map((message: Message, index: number) => {
                         const isUser = message?.role === "user"

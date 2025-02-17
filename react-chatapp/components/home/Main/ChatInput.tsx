@@ -17,9 +17,11 @@ import eventBus from "@/store/eventBus";
 import { message } from "antd";
 import sendFetch from "@/util/fetch"
 import { setUserId } from '@/store/modules/userStore';
+import { useIsMobile } from "@/util/devices"
 
 // 聊天输入框
 export default function ChatInput({hideButton = false}) {
+    const isMobile = useIsMobile()
     // 记录用户输入消息
     const [messageText, setMessageText] = useState("")
     // 记录用户是否正在输入，useRef 的值更新不会导致组件重渲染。
@@ -312,7 +314,9 @@ export default function ChatInput({hideButton = false}) {
                                 重新生成
                             </Button>
                         ))}
-                    <div className='flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] py-4'>
+                    <div className={`${!isMobile ? "py-4" : "py-2"
+                        } flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)]`}
+                    >
                         <div className='mx-3 mb-2.5 text-primary-500'>
                             <PiLightningFill />
                         </div>
@@ -339,7 +343,7 @@ export default function ChatInput({hideButton = false}) {
                         />
                     </div>
                     {/* 底部来源信息 */}
-                    <footer className='text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-6'>
+                    <footer className='text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-4'>
                         ©️{new Date().getFullYear()}&nbsp;{" "}
                         <a
                             className='font-medium py-[1px] border-b border-dotted border-black/60 hover:border-black/0 dark:border-gray-200 dark:hover:border-gray-200/0 animated-underline'

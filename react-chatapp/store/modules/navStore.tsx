@@ -6,8 +6,6 @@ const navStore = createSlice({
     initialState: {
         // 是否展示则边栏
         isShowNav: true,
-        // 侧边栏展示是否遮罩
-        isShowMaskNav: false,
         themeMode: 'light',
         language: 'chinese',
         showRightDrawer: false,
@@ -16,9 +14,6 @@ const navStore = createSlice({
     reducers: {
         setIsShowNav(state, action) {
             state.isShowNav = action.payload
-        },
-        setIsShowMaskNav(state, action) {
-            state.isShowMaskNav = action.payload
         },
         setThemeMode(state, action) {
             state.themeMode = action.payload
@@ -37,7 +32,6 @@ const navStore = createSlice({
 
 export const {
     setIsShowNav,
-    setIsShowMaskNav,
     setThemeMode,
     setLanguage,
     setShowRightDrawer,

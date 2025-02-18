@@ -11,7 +11,8 @@ import {
     updataMessageList,
     removeMessageList,
     setStreamingId,
-    setSelectedChat
+    setSelectedChat,
+    setSelectedChatTitle
 } from '@/store/modules/mainStore'
 import eventBus from "@/store/eventBus";
 import { message } from "antd";
@@ -77,7 +78,6 @@ export default function ChatInput({hideButton = false}) {
         // 在服务端创建好消息后，需要返回一个 chatid，用来标识对话
         if (!chatIdRef.current) {
             chatIdRef.current = data.message.chatId
-            // publish("fetchChatList")
             // 没有chatid，发布一个事件，让服务端重新获取对话列表
             eventBus.publish("fetchChatList");
             // 创建新对话时，将当前对话设置为选中
@@ -137,8 +137,7 @@ export default function ChatInput({hideButton = false}) {
         }
         const response = await sendFetch(`/api/chat`, optinion)
         if (!response) {
-            // 清空用户信息，要求重新登录
-            dispatch(setUserId(''));
+            console.warn('获取返回数据失败！');
             return
         }
 
@@ -165,13 +164,14 @@ export default function ChatInput({hideButton = false}) {
         }
         const updateResponse = await sendFetch("/api/chat/update", optinion)
         if (!updateResponse) {
-            // 清空用户信息，要求重新登录
-            dispatch(setUserId(''));
+            console.warn('更新聊天标题失败')
             return
         }
 
         const { code } = await updateResponse.json()
         if (code === 0) {
+            // 更新标题
+            dispatch(setSelectedChatTitle(title))
             // 更新成功，重置状态，发布一次订阅
             eventBus.publish("fetchChatList");
         }

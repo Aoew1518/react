@@ -3,7 +3,7 @@ import { Message } from "@/types/chat"
 import { SiOpenai } from "react-icons/si"
 import { FaRegUser } from "react-icons/fa"
 import { useSelector, useDispatch } from "react-redux"
-import { setMessageList } from "@/store/modules/mainStore"
+import { setMessageList, setSelectedChatTitle } from "@/store/modules/mainStore"
 import { useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
 import ChatInput from "./ChatInput"
@@ -39,6 +39,17 @@ export default function MessageList() {
     const dispatch = useDispatch()
     const { messageList, streamingId, selectedChat } = useSelector((state: any) => state.mainStore)
 
+    useEffect(() => {
+        if (selectedChat && selectedChat.id) {
+            // 选择的当前聊天存在，则获取消息列表数据，并设置当前聊天标题
+            dispatch(setSelectedChatTitle(selectedChat.title))
+            getMessageListData(selectedChat.id)
+        }
+        else {
+            dispatch(setMessageList([]))
+        }
+    }, [selectedChat])
+
     // 获取对应聊天的消息列表数据
     async function getMessageListData(chatId: string) {
         const response = await fetch(`/api/message/list?chatId=${chatId}`, {
@@ -52,16 +63,7 @@ export default function MessageList() {
         const { data } = await response.json()
         dispatch(setMessageList(data.list))
     }
-
-    useEffect(() => {
-        if (selectedChat && selectedChat.id) {
-            getMessageListData(selectedChat.id)
-        }
-        else {
-            dispatch(setMessageList([]))
-        }
-    }, [selectedChat])
-
+    
     return (
         <>
             <div className='overflow-y-auto w-full min-w-[375px] pb-44 dark:text-gray-300'>

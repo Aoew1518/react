@@ -26,7 +26,6 @@ export default function Navigation() {
 
         const handleResize = () => {
             let innerWidth = window.innerWidth
-            console.log('hasChangedShowNav', hasChangedShowNav)
             if (innerWidth < 1200 && hasChangedShowNav) {
                 hasChangedShowNav = false
                 dispatch(setIsShowNav(false))

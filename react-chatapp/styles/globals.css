@@ -195,3 +195,8 @@ body {
         }        
     }
 }
+
+/* antd message全局提示 */
+.ant-message {
+    z-index: 9999 !important; /* 设置为更高的值 */
+}

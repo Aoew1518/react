@@ -107,36 +107,6 @@ function ChatList() {
         return groupByDate(chatList)
     }, [chatList])
 
-    // 获取当前聊天列表数据
-    async function getChatListData() {
-        // 避免反复滑动列表底部而进行多次请求
-        if (loadingRef.current) {
-            return
-        }
-        loadingRef.current = true
-
-        const response = await sendFetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {method: "GET"})
-        if (!response) {
-            // 清空用户信息，要求重新登录
-            dispatch(setUserId(''));
-            return
-        }
-
-        const { data } = await response?.json()
-        hasMoreRef.current = data?.hasMore || false
-
-        // 更新当前对话列表
-        if (pageRef.current === 1) {
-            setChatList(data.list)
-        }
-        else {
-            setChatList((list) => list.concat(data.list))
-        }
-        // 每次发送请求后，页码递增
-        pageRef.current++
-        loadingRef.current = false
-    }
-
     useEffect(() => {
         if (userId) {
             getChatListData()
@@ -181,6 +151,36 @@ function ChatList() {
             }
         }
     }, [userId])
+
+
+    // 获取当前聊天列表数据
+    async function getChatListData() {
+        // 避免反复滑动列表底部而进行多次请求
+        if (loadingRef.current) {
+            return
+        }
+        loadingRef.current = true
+
+        const response = await sendFetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {method: "GET"})
+        if (!response) {
+            console.warn("服务器异常，请求失败！")
+            return
+        }
+
+        const { data } = await response?.json()
+        hasMoreRef.current = data?.hasMore || false
+
+        // 更新当前对话列表
+        if (pageRef.current === 1) {
+            setChatList(data.list)
+        }
+        else {
+            setChatList((list) => list.concat(data.list))
+        }
+        // 每次发送请求后，页码递增
+        pageRef.current++
+        loadingRef.current = false
+    }
 
     return (
         <div className='flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto'>

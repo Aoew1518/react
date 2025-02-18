@@ -4,13 +4,20 @@ import { HiMenuAlt1 } from "react-icons/hi";
 import { TbMessageCirclePlus } from "react-icons/tb";
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsShowNav } from '@/store/modules/navStore'
-import { setSelectedChat } from '@/store/modules/mainStore'
+import { setSelectedChat, setSelectedChatTitle } from '@/store/modules/mainStore'
 import { useIsMobile } from "@/util/devices"
+import { useEffect } from "react";
 
 export default function Menu() {
     const dispatch = useDispatch();
-    const isMobile = useIsMobile()
-    const { selectedChat } = useSelector((state: any) => state.mainStore)
+    const isMobile = useIsMobile();
+    const { selectedChat, selectedChatTitle } = useSelector((state: any) => state.mainStore);
+
+    useEffect(() => {
+        if (selectedChat === null) {
+            dispatch(setSelectedChatTitle(''));
+        }
+    }, [selectedChat]);
 
     return (
         <>
@@ -25,7 +32,7 @@ export default function Menu() {
                         variant='text'
                         onClick={() => { dispatch(setIsShowNav(true)) }}
                     />
-                    <span className="text-lg font-bold">{selectedChat?.title || ''}</span>
+                    <span className="text-lg font-bold">{selectedChatTitle}</span>
                     <Button
                         icon={TbMessageCirclePlus}
                         className={`${!isMobile ? "hidden" : ""} mr-2`}

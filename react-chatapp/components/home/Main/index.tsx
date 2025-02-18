@@ -4,7 +4,7 @@ import Welcome from "./Welcome"
 import ChatInput from "./ChatInput"
 import MessageList from "./MessageList"
 import { useSelector } from "react-redux"
-import Menu from "./Menu"
+import Menu from "./Header"
 
 export default function Main() {
     const { selectedChat } = useSelector((state: any) => state.mainStore)

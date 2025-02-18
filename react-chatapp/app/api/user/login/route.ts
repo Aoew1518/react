@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET as string;
     // 设置 Token 过期时间为 1 小时
-    const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '4h' });
+    const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: '24h' });
 
     // 设置 Cookie
     const response = NextResponse.json({

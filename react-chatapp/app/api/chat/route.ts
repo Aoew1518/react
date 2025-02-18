@@ -53,5 +53,4 @@ export async function POST(request: NextRequest) {
     catch (error) {
         return new Response("服务器错误，请稍后再试！", { status: 500 });
     }
-
-}
+};

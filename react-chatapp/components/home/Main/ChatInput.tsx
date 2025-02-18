@@ -12,7 +12,8 @@ import {
     removeMessageList,
     setStreamingId,
     setSelectedChat,
-    setSelectedChatTitle
+    setSelectedChatTitle,
+    setIsLoading,
 } from '@/store/modules/mainStore'
 import eventBus from "@/store/eventBus";
 import { message } from "antd";
@@ -70,8 +71,7 @@ export default function ChatInput({hideButton = false}) {
         }
         const response = await sendFetch("/api/message/update", optinion)
         if (!response) {
-            // 清空用户信息，要求重新登录
-            dispatch(setUserId(''));
+            console.error("消息发送失败！")
             return
         }
         const { data } = await response.json()
@@ -88,6 +88,7 @@ export default function ChatInput({hideButton = false}) {
 
     // 点击发送消息
     async function clickSendMessages(content: string) {
+        dispatch(setIsLoading(true))
         if (currentModel === 'GPT-4' || currentModel === 'gpt-35-turbo') {
             messageApi.info({
                 content: '该模型暂未开放，请选择deepseek-chat模型',
@@ -190,6 +191,16 @@ export default function ChatInput({hideButton = false}) {
             }
             // 获取字符流
             const response = await sendFetch("/api/chat", optinion)
+                .then((res) => {
+                    dispatch(setIsLoading(false))
+                    console.log('字符流res', res)
+                    return res
+                })
+                .catch((error) => {
+                    dispatch(setIsLoading(false))
+                    console.error('error', error)
+                    return
+                })
             if (!response) {
                 // 清空用户信息，要求重新登录
                 dispatch(setUserId(''));
@@ -209,7 +220,6 @@ export default function ChatInput({hideButton = false}) {
             dispatch(addMessageList(responseMessage))
             dispatch(setStreamingId(responseMessage?.id))
             // 获取返回的数据流
-            console.log('response', response)
             const reader = response?.body?.getReader()
             // 从字节流解码为字符串
             const decoder = new TextDecoder()
@@ -249,6 +259,7 @@ export default function ChatInput({hideButton = false}) {
 
     // 重新发送
     async function resend() {
+        dispatch(setIsLoading(true))
         const messages = [...messageList] as Message[]
         // 删除最后一个消息且且是回复的消息
         if (
@@ -257,10 +268,8 @@ export default function ChatInput({hideButton = false}) {
         ) {
             // 获取最后一个消息
             const lastMessage = messages[messages.length - 1];
-            console.log(' 最后一个消息',lastMessage)
             // 接口调用失败则打印错误日志
             const isDelete = await deleteMessage(lastMessage?.id || '')
-            console.log(' 重新发送',isDelete)
             if (!isDelete) {
                 console.warn("delete error")
                 return
@@ -273,12 +282,16 @@ export default function ChatInput({hideButton = false}) {
         }
         // 再重新请求一条消息
         sendMessage(messages)
+
+        // 更新对话标题
+        if (!selectedChat?.title || selectedChat.title === '新对话') {
+            updateChatTitle(messages)
+        }
     }
 
     // 删除消息
     async function deleteMessage(id: string) {
         const response = await sendFetch(`/api/message/delete?id=${id}`)
-        console.log('最后的id和删除消息',id, response)
         const { code } = await response?.json()
         // 为 0 则删除成功
         return code === 0

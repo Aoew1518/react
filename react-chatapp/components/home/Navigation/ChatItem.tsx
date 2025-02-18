@@ -20,7 +20,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
     // 选中和删除状态
     const [editing, setEditing] = useState(false)
     const [deleting, setDeleting] = useState(false)
-    const [title, setTitle] = useState(item.title)
+    const [title, setTitle] = useState(item.title || "新对话")
     const dispatch = useDispatch()
 
     // selected 变化时，重置编辑和删除状态
@@ -75,6 +75,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
 
         const { code } = await response.json()
         if (code === 0) {
+            messageApi.success('删除聊天成功！');
             // 删除成功，重置状态，发布一次订阅
             eventBus.publish("fetchChatList");
             // 将当前选择的聊天置为空

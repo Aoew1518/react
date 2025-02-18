@@ -15,6 +15,8 @@ const mainStore = createSlice({
         selectedChat: {} as Chat,
         // 选择的聊天列表的标题
         selectedChatTitle: '',
+        // 加载开始
+        isLoading: false,
     },
     reducers: {
         setCurrentModel(state, action) {
@@ -56,6 +58,9 @@ const mainStore = createSlice({
         },
         setSelectedChatTitle(state, action) {
             state.selectedChatTitle = action.payload;
+        },
+        setIsLoading(state, action) {
+            state.isLoading = action.payload
         }
     }
 });
@@ -70,6 +75,7 @@ export const {
     setStreamingId,
     setSelectedChat,
     setSelectedChatTitle,
+    setIsLoading
 } = mainStore.actions;
 // 异步请求部分，将异步请求数据注入到store中
 // const fetchChannlList = () => {

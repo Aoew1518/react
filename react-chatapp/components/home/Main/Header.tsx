@@ -4,7 +4,7 @@ import { HiMenuAlt1 } from "react-icons/hi";
 import { TbMessageCirclePlus } from "react-icons/tb";
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsShowNav } from '@/store/modules/navStore'
-import { setSelectedChat, setSelectedChatTitle } from '@/store/modules/mainStore'
+import { setSelectedChat, setMessageList, setSelectedChatTitle } from '@/store/modules/mainStore'
 import { useIsMobile } from "@/util/devices"
 import { useEffect } from "react";
 
@@ -19,6 +19,11 @@ export default function Menu() {
         }
     }, [selectedChat]);
 
+    function clearMessageAndChat() {
+        dispatch(setMessageList([]))
+        dispatch(setSelectedChat(null))
+    }
+
     return (
         <>
             <div>
@@ -32,13 +37,13 @@ export default function Menu() {
                         variant='text'
                         onClick={() => { dispatch(setIsShowNav(true)) }}
                     />
-                    <span className="text-lg font-bold">{selectedChatTitle}</span>
+                    <span className="text-lg font-bold">{selectedChatTitle || "新对话"}</span>
                     <Button
                         icon={TbMessageCirclePlus}
                         className={`${!isMobile ? "hidden" : ""} mr-2`}
                         iconClassName="!text-2xl"
                         variant='text'
-                        onClick={() => dispatch(setSelectedChat(null))}
+                        onClick={() => clearMessageAndChat()}
                     />
                 </div>
                 <div

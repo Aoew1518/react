@@ -60,6 +60,31 @@ body {
     background-color: #f9fbff;
 }
 
+/* 用户提问消息样式 */
+.user-message > div:first-child {
+    float: right;
+}
+
+.user-message {
+    p {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 10px;
+        background-color: #eff6ff;
+    }
+}
+
+.assistant-message {
+    padding-left: 10px;
+}
+
+.dark .user-message {
+    p {
+        color: #e5e7eb;
+        background-color: #e5e7eb47;
+    }
+}
+
 /* antd下拉菜单暗黑样式 */
 .dark .dropdown {
     ul {
@@ -200,3 +225,4 @@ body {
 .ant-message {
     z-index: 9999 !important; /* 设置为更高的值 */
 }
+

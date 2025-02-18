@@ -142,7 +142,6 @@ export default function RightDrawer() {
 
     // 提交子抽屉数据
     function onFinish(values: updatePassWord) {
-        console.log('values', values)
         if (selectKey === '0') {
 
         }

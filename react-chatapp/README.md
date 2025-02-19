@@ -23,6 +23,8 @@
   - bcryptjs：npm i --save-dev @types/bcryptjs
   - jwt：npm install jsonwebtoken --save-dev @types/jsonwebtoken
   - js-cookie 读cookie使用
+- 国际化
+  - npm install react-i18next i18next
 
 ## 启动项目
 

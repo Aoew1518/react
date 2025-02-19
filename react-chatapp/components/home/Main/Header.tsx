@@ -37,7 +37,7 @@ export default function Menu() {
                         variant='text'
                         onClick={() => { dispatch(setIsShowNav(true)) }}
                     />
-                    <span className="text-lg font-bold">{selectedChatTitle || "新对话"}</span>
+                    <span className="text-lg font-bold">{selectedChatTitle || ""}</span>
                     <Button
                         icon={TbMessageCirclePlus}
                         className={`${!isMobile ? "hidden" : ""} mr-2`}

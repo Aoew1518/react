@@ -13,6 +13,7 @@ import { setSelectedChat } from '@/store/modules/mainStore';
 import RightDrawer from "./Settings";
 import sendFetch from "@/util/fetch";
 import eventBus from "@/store/eventBus";
+import { useTranslation } from 'react-i18next';
 
 export default function ChatDropdown({
     children,
@@ -31,13 +32,14 @@ export default function ChatDropdown({
     const [messageApi, contextHolder] = message.useMessage();
     // 是否出现modal组件的取消按钮和右上角的叉号
     const [showCancel, setShowCancel] = useState(true);
+    const { t } = useTranslation();
 
     const items: MenuProps['items'] = [
         {
             icon: <UserOutlined />,
             label: (
                 <div onClick={() => handleMenuClick('0')}>
-                    个人信息
+                    {t('personalInfo')}
                 </div>
             ),
             key: '0',
@@ -46,7 +48,7 @@ export default function ChatDropdown({
             icon: <SettingOutlined />,
             label: (
                 <div onClick={() => handleMenuClick('1')}>
-                    系统设置
+                    {t('systemSettings')}
                 </div>
             ),
             key: '1',
@@ -55,7 +57,7 @@ export default function ChatDropdown({
             icon: <ClearOutlined />,
             label: (
                 <div onClick={() => handleMenuClick('2')}>
-                    删除所有对话
+                    {t('deleteAllChats')}
                 </div>
             ),
             key: '2',
@@ -67,7 +69,7 @@ export default function ChatDropdown({
             icon: <LogoutOutlined />,
             label: (
                 <div onClick={() => handleMenuClick('3')}>
-                    退出登录
+                    {t('logOut')}
                 </div>
             ),
             key: '3',
@@ -80,18 +82,16 @@ export default function ChatDropdown({
         switch (key) {
             case '0':
                 openSetting()
-                setContentText('个人信息');
                 break;
             case '1':
                 openSetting()
-                setContentText('系统设置');
                 break;
             case '2':
-                setContentText('删除所有对话?');
+                setContentText(t('deleteAllChats') + '?');
                 setOpen(true);
                 break;
             case '3':
-                setContentText('退出登录?');
+                setContentText(t('logOut') + '?');
                 setOpen(true);
                 break;
             default:
@@ -175,8 +175,8 @@ export default function ChatDropdown({
                 onOk={handleOk}
                 onCancel={handleCancel}
                 confirmLoading={confirmLoading}
-                okText={'确认'}
-                cancelText={'取消'}
+                okText={t('confirm')}
+                cancelText={t('cancel')}
                 // 根据 modalOptions 动态控制取消按钮
                 footer={showCancel ? undefined : [
                     <Button
@@ -186,7 +186,7 @@ export default function ChatDropdown({
                         loading={confirmLoading}
                         onClick={handleOk}
                     >
-                        确认
+                        {t('confirm')}
                     </Button>
                 ]}
             >

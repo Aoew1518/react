@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import eventBus from "@/store/eventBus";
 import { useRef } from "react"
 import { setSelectedChat } from "@/store/modules/mainStore"
-import { setUserId } from '@/store/modules/userStore';
 import sendFetch from "@/util/fetch"
 
 function ChatList() {
@@ -101,11 +100,12 @@ function ChatList() {
     const [chatList, setChatList] = useState<Chat[]>([])
     const { selectedChat } = useSelector((state: any) => state.mainStore)
     const { userId } = useSelector((state: any) => state.userStore)
+    const { language } = useSelector((state: any) => state.navStore);
 
     // 得到分组好的列表
     const groupList = useMemo(() => {
         return groupByDate(chatList)
-    }, [chatList])
+    }, [chatList, language])
 
     useEffect(() => {
         if (userId) {

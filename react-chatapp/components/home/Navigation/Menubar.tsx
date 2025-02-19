@@ -4,9 +4,11 @@ import { LuPanelLeftClose } from "react-icons/lu";
 import { useDispatch } from 'react-redux';
 import { setSelectedChat, setMessageList } from '@/store/modules/mainStore'
 import { setIsShowNav } from "@/store/modules/navStore"
+import { useTranslation } from 'react-i18next';
 
 export default function Menubar() {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     function clearMessageAndChat() {
         dispatch(setMessageList([]))
@@ -21,7 +23,7 @@ export default function Menubar() {
                 className='flex-1'
                 onClick={() => clearMessageAndChat()}
             >
-                新建对话
+                {t('newChat')}
             </Button>
             <Button
                 icon={LuPanelLeftClose}

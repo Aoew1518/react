@@ -13,11 +13,13 @@ import sendFetch from "@/util/fetch";
 import { updatePassWord } from "@/types/user"
 import { defaultUserAvatar } from "@/util/avatar"
 import eventBus from '@/store/eventBus'
+import { useTranslation } from 'react-i18next';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 export default function RightDrawer() {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const { showRightDrawer } = useSelector((state: any) => state.navStore);
     const { userId, userName, userAvatar } = useSelector((state: any) => state.userStore);
     const [selectRadio, setSelectRadio] = useState<'generalSettings' | 'accountInfo'>('generalSettings');
@@ -35,8 +37,8 @@ export default function RightDrawer() {
     const [messageApi, contextHolder] = message.useMessage();
     const [functionType, setFunctionType] = useState<'deleteAccount' | 'updatePassword' | 'default'>('default');
     const options: CheckboxGroupProps<string>['options'] = [
-        { label: '通用设置', value: 'generalSettings' },
-        { label: '账户信息', value: 'accountInfo' },
+        { label: t('generalSettings'), value: 'generalSettings' },
+        { label: t('accountInfo'), value: 'accountInfo' },
     ]
     // 头像预览是否打开
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -156,7 +158,7 @@ export default function RightDrawer() {
             messageApi.info('请先登录！');
             return;
         }
-        setChildrenDrawerTitle('账号管理')
+        setChildrenDrawerTitle(t('accountSettings'))
         setSelectKey('0');
         setOpenChildrenDrawer(true);
 
@@ -168,7 +170,7 @@ export default function RightDrawer() {
             messageApi.info('请先登录！');
             return;
         }
-        setChildrenDrawerTitle('修改密码')
+        setChildrenDrawerTitle(t('changePassword'))
         setSelectKey('1');
         setOpenChildrenDrawer(true);
     }
@@ -288,7 +290,7 @@ export default function RightDrawer() {
                                     setOpenModal(false);
                                 }}
                             >
-                                取消
+                                {t('cancel')}
                             </Button>
                         )}
                         <Button
@@ -297,7 +299,7 @@ export default function RightDrawer() {
                             color={functionType === 'deleteAccount' ? 'danger' : 'primary'}
                             loading={confirmLoading}
                             onClick={handleOk}
-                        > 确认
+                        > {t('confirm')}
                         </Button>
                     </>
                 }
@@ -305,7 +307,7 @@ export default function RightDrawer() {
                 <p>{`${contentText}`}</p>
             </Modal>
             <Drawer
-                title="系统设置"
+                title={t('systemSettings')}
                 open={showRightDrawer}
                 onClose={handleCancel}
                 className="dark:!bg-gray-800 dark:text-white"
@@ -339,13 +341,13 @@ export default function RightDrawer() {
                                 align="middle"
                                 justify="space-between"
                             >
-                                <Col>头像</Col>
+                                <Col>{t('avatar')}</Col>
                                 <Col>
                                     <ImgCrop
                                         rotationSlider
                                         showReset={true}
                                         cropShape="round"
-                                        modalTitle="编辑上传的头像图片"
+                                        modalTitle={t('editAvatar')}
                                     >
                                         <Upload
                                             name="avatar"
@@ -364,7 +366,7 @@ export default function RightDrawer() {
                                             customRequest={customRequest}
                                             onPreview={onPreview}
                                         >
-                                            <span className="dark:text-white">更换头像</span>
+                                            <span className="dark:text-white">{t('changeAvatar')}</span>
                                         </Upload>
                                     </ImgCrop>
                                     {/* 预览头像 */}
@@ -386,7 +388,7 @@ export default function RightDrawer() {
                                 align="middle"
                                 justify="space-between"
                             >
-                                <Col>账号昵称</Col>
+                                <Col>{t('accountNickname')}</Col>
                                 <Col>
                                     <span className="dark:text-white">{userName}</span>
                                 </Col>
@@ -396,14 +398,14 @@ export default function RightDrawer() {
                                 align="middle"
                                 justify="space-between"
                             >
-                                <Col>注销账号</Col>
+                                <Col>{t('cancelAccount')}</Col>
                                 <Col>
                                     <Button
                                         color="danger"
                                         variant="solid"
                                         onClick={() => unsubscribeUserInfo()}
                                     >
-                                        确定
+                                        {t('confirm')}
                                     </Button>
                                 </Col>
                             </Row>
@@ -417,28 +419,28 @@ export default function RightDrawer() {
                         >
                             <Form.Item
                                 name="password"
-                                label="输入新密码"
-                                rules={[{ required: true, message: '请输入新密码' }]}
+                                label={t('enterNewPassword')}
+                                rules={[{ required: true, message: t('enterNewPassword') }]}
                             >
                                 <Input.Password
                                     id="password"
-                                    placeholder="请输入密码"
+                                    placeholder={t('enterNewPassword')}
                                     className="dark:!bg-gray-300 dark:border-gray-900"
                                 />
                             </Form.Item>
                             <Form.Item
                                 name="confirmPassword"
-                                label="再次输入密码"
-                                rules={[{ required: true, message: '请再次输入新密码' }]}
+                                label={t('enterNewPasswordAgain')}
+                                rules={[{ required: true, message: t('enterNewPasswordAgain') }]}
                             >
                                 <Input.Password
                                     id="confirmPassword"
-                                    placeholder="请再次输入密码"
+                                    placeholder={t('enterNewPasswordAgain')}
                                     className="dark:!bg-gray-300 dark:border-gray-900"
                                 />
                             </Form.Item>
                             <Button htmlType="submit" type="primary">
-                                确认
+                                {t('confirm')}
                             </Button>
                         </Form>
                     )}

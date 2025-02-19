@@ -20,9 +20,11 @@ import { message } from "antd";
 import sendFetch from "@/util/fetch"
 import { setUserId } from '@/store/modules/userStore';
 import { useIsMobile } from "@/util/devices"
+import { useTranslation } from 'react-i18next';
 
 // 聊天输入框
-export default function ChatInput({hideButton = false}) {
+export default function ChatInput({ hideButton = false }) {
+    const { t } = useTranslation();
     const isMobile = useIsMobile()
     // 记录用户输入消息
     const [messageText, setMessageText] = useState("")
@@ -152,7 +154,7 @@ export default function ChatInput({hideButton = false}) {
         let title = ''
         // 循环读取数据流
         while (!done) {
-            const result = await reader?.read() 
+            const result = await reader?.read()
             // 数据流是否读完
             done = result?.done || false
             // 解码数据流为字符串
@@ -313,7 +315,7 @@ export default function ChatInput({hideButton = false}) {
                                 }}
                                 className='font-medium z-10'
                             >
-                                停止生成
+                                {t('stopGenerating')}
                             </Button>
                         ) : (
                             <Button
@@ -324,7 +326,7 @@ export default function ChatInput({hideButton = false}) {
                                 }}
                                 className='font-medium z-10'
                             >
-                                重新生成
+                                {t('regenerateBtn')}
                             </Button>
                         ))}
                     <div className={`${!isMobile ? "py-4" : "py-2"
@@ -336,7 +338,7 @@ export default function ChatInput({hideButton = false}) {
                         {/* 消息输入框 */}
                         <TextareaAutoSize
                             className='outline-none flex-1 max-h-64 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0'
-                            placeholder='输入一条消息...'
+                            placeholder={t('enterMessage')}
                             rows={1}
                             value={messageText}
                             onChange={(e) => {
@@ -356,17 +358,24 @@ export default function ChatInput({hideButton = false}) {
                         />
                     </div>
                     {/* 底部来源信息 */}
-                    <footer className='text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-4'>
-                        ©️{new Date().getFullYear()}&nbsp;{" "}
-                        <a
-                            className='font-medium py-[1px] border-b border-dotted border-black/60 hover:border-black/0 dark:border-gray-200 dark:hover:border-gray-200/0 animated-underline'
-                            href='https://github.com/Aoew1518'
-                            target='_blank'
-                        >
-                            Aoew1518
-                        </a>
-                        .&nbsp;基于 OpenAI 提供的内容
-                    </footer>
+                    {!isMobile ? (
+                        <footer className='text-center text-sm text-gray-700 dark:text-gray-300 px-4 pb-4'>
+
+                            <>
+                                ©️{new Date().getFullYear()}&nbsp;{" "}
+                                <a
+                                    className='font-medium py-[1px] border-b border-dotted border-black/60 hover:border-black/0 dark:border-gray-200 dark:hover:border-gray-200/0 animated-underline'
+                                    href='https://github.com/Aoew1518'
+                                    target='_blank'
+                                >
+                                    Aoew1518.&nbsp;
+                                </a>
+                            </>
+                            {t('contentGeneratedByAI')}
+                        </footer>
+                    )
+                    : <footer className='pb-1' />
+                }
                 </div>
             </div>
         </>

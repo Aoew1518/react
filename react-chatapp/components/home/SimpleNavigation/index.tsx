@@ -9,9 +9,11 @@ import { Space, Button, Tooltip } from "antd";
 import { antdButtonStyle } from "@/components/common/AntdButtonStyle";
 import { setSelectedChat } from '@/store/modules/mainStore'
 import ChatDropdown from "../Navigation/ChatDropdown"
+import { useTranslation } from 'react-i18next';
 
 export default function SimpleNavigation() {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     return (
         <div className="flex flex-col justify-between w-[68px] min-w-[68px] h-full py-2 theme-nav left-0 top-0 z-50 bg-white dark:bg-gray-900 shadow-md">
@@ -20,7 +22,7 @@ export default function SimpleNavigation() {
                 size="middle"
                 className="w-full p-2 items-center"
             >
-                <Tooltip placement="right" title="展开菜单">
+                <Tooltip placement="right" title={t('expandMenu')}>
                     <Button
                         type="text"
                         size="large"
@@ -31,7 +33,7 @@ export default function SimpleNavigation() {
                     </Button>
                 </Tooltip>
 
-                <Tooltip placement="right" title="开始新对话">
+                <Tooltip placement="right" title={t('startNewChat')}>
                     <Button
                         type="text"
                         size="large"
@@ -48,10 +50,11 @@ export default function SimpleNavigation() {
                 size="middle"
                 className="w-full p-2 flex flex-col items-center"
             >
-                <Tooltip placement="right" title="系统设置">
-                    <ChatDropdown
-                        arrow={false}
-                    >
+                <ChatDropdown
+                    arrow={false}
+                >
+                    <Tooltip placement="right" title={t('systemSettings')}>
+
                         <Button
                             type="text"
                             size="large"
@@ -59,8 +62,8 @@ export default function SimpleNavigation() {
                         >
                             <IoSettingsOutline className="text-2xl" />
                         </Button>
-                    </ChatDropdown>
-                </Tooltip>
+                    </Tooltip>
+                </ChatDropdown>
             </Space>
         </div>
     )

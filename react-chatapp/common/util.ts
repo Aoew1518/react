@@ -1,4 +1,6 @@
 import { Chat } from "@/types/chat"
+// 语言变化不会自动更新组件的内容，需要手动调用，但适用于任何地方的翻译调用
+import { t } from 'i18next';
 
 // 将传入的 chatList（聊天记录列表）根据 updateTime（更新时间）字段进行分组，并按时间顺序排序
 // 分组的依据是聊天记录的更新时间相对当前时间的差异
@@ -9,21 +11,24 @@ export function groupByDate(chatList: Chat[]) {
     chatList.forEach((item) => {
         const now = new Date()
         const updateTime = new Date(item.updateTime)
-        let key = "未知时间"
+        let key = t('unknownTime')
         const dayDiff = Math.floor(
             (now.getTime() - updateTime.getTime()) / (1000 * 60 * 60 * 24)
         )
         if (dayDiff === 0 && now.getDate() === updateTime.getDate()) {
-            key = "今天"
+            key = t('today')
+        }
+        else if (dayDiff === 1) {
+            key = t('yesterday')
         }
         else if (dayDiff <= 7) {
-            key = "最近7天"
+            key = t('last_7_days')
         }
         else if (dayDiff <= 31) {
-            key = "最近一个月"
+            key = t('lastMonth')
         }
         else if (now.getFullYear() === updateTime.getFullYear()) {
-            key = `${updateTime.getMonth() + 1}月`
+            key = `${updateTime.getMonth() + 1}${t('month')}`
         }
         else {
             key = `${updateTime.getFullYear()}`

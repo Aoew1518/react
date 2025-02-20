@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         // 检查 ID 和新密码是否存在
         if (!id || !newPassword) {
             return NextResponse.json({
-                error: "缺少用户 ID 或新密码",
+                error: "不存在该用户或用户ID错误！",
                 code: -1
             }, { status: 400 });
         }

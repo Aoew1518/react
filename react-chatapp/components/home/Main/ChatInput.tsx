@@ -261,7 +261,6 @@ export default function ChatInput({ hideButton = false }) {
 
     // 重新发送
     async function resend() {
-        dispatch(setIsLoading(true))
         const messages = [...messageList] as Message[]
         // 删除最后一个消息且且是回复的消息
         if (
@@ -275,6 +274,9 @@ export default function ChatInput({ hideButton = false }) {
             if (!isDelete) {
                 console.warn("delete error")
                 return
+            }
+            else {
+        dispatch(setIsLoading(true))
             }
 
             dispatch(removeMessageList(lastMessage))
@@ -368,10 +370,10 @@ export default function ChatInput({ hideButton = false }) {
                                     href='https://github.com/Aoew1518'
                                     target='_blank'
                                 >
-                                    Aoew1518.&nbsp;
+                                    Aoew1518
                                 </a>
                             </>
-                            {t('contentGeneratedByAI')}
+                            .&nbsp;{t('contentGeneratedByAI')}
                         </footer>
                     )
                     : <footer className='pb-1' />

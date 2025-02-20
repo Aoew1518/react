@@ -26,6 +26,8 @@ i18n
                     unknownTime: "Unknown time",
 
                     // 抽屉设置组件
+                    pleaseLogin: "Please login first!",
+                    networkMalfunction: "Network malfunction, please try again later!",
                     generalSettings: "General Setup",
                     accountInfo: "Account information",
                     language: "Language",
@@ -43,11 +45,17 @@ i18n
                     avatar: "Avatar",
                     changeAvatar: "Change Avatar",
                     editAvatar: "Edit Uploaded Avatar",
+                    AvatarUpdatedSuccessfully: "Avatar Updated Successfully!",
                     accountNickname: "Account Nickname",
                     cancelAccount: "Cancel Account",
                     enterNewPassword: "Enter New Password",
                     enterNewPasswordAgain: "Enter New Password Again",
-
+                    inconsistentPasswords: "The password entered twice is inconsistent, please re-enter the password!",
+                    PasswordChangedSuccessfully: "Password Changed Successfully, Please Re-Login!",
+                    isCancelAccount: "Do you want to cancel the account?",
+                    cancelAccountSuccessfully: "Account cancellation successful, will now be redirected to the login page!",
+                    cancelAccountFailed: "Account cancellation failed, please try again later!",
+                    
                     // 下拉菜单设置组件
                     personalInfo: "Personal Information",
                     systemSettings: "System Settings",
@@ -82,6 +90,8 @@ i18n
                     unknownTime: "未知时间",
                     
                     // 抽屉设置组件
+                    pleaseLogin: "请先登录！",
+                    networkMalfunction: "网络异常，请稍后再试！",
                     generalSettings: "通用设置",
                     accountInfo: "账户信息",
                     language: "语言",
@@ -99,10 +109,16 @@ i18n
                     avatar: "头像",
                     changeAvatar: "更换头像",
                     editAvatar: "编辑上传的头像图片",
+                    AvatarUpdatedSuccessfully: "头像更新成功！",
                     accountNickname: "账号昵称",
                     cancelAccount: "注销账号",
                     enterNewPassword: "输入新密码",
                     enterNewPasswordAgain: "再次输入新密码",
+                    inconsistentPasswords: "俩次密码输入不一致，请重新输入密码！",
+                    PasswordChangedSuccessfully: "密码修改成功，请重新登录！",
+                    isCancelAccount: "是否注销账账户？",
+                    cancelAccountSuccessfully: "注销账户成功，即将跳转登录页！",
+                    cancelAccountFailed: "注销账户失败，请稍后再试！",
 
                     // 下拉菜单设置组件
                     personalInfo: "个人信息",

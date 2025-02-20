@@ -65,24 +65,23 @@ body {
     float: right;
 }
 
-.user-message {
-    p {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 10px;
-        background-color: #eff6ff;
-    }
+.user-message .user-message-style {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 10px;
+    border-top-right-radius: 0px;
+    background-color: #eff6ff;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .assistant-message {
     padding-left: 10px;
 }
 
-.dark .user-message {
-    p {
-        color: #e5e7eb;
-        background-color: #e5e7eb47;
-    }
+.dark .user-message .user-message-style {
+    color: #e5e7eb;
+    background-color: #e5e7eb47;
 }
 
 /* antd下拉菜单暗黑样式 */
@@ -226,3 +225,13 @@ body {
     z-index: 9999 !important; /* 设置为更高的值 */
 }
 
+/* .assistant-message::after {
+    content: '复制';
+    position: absolute;
+    padding: 0 5px;
+    background-color: #e9173a;
+    color: #000;
+    font-size: 12px;
+    line-height: 20px;
+    border-radius: 0 0 0 5px;
+} */

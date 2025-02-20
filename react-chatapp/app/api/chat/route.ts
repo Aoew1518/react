@@ -1,4 +1,3 @@
-// import { sleep } from "@/common/util";
 import { NextRequest, } from "next/server";
 import { MessageRequestBody } from "@/types/chat"
 import openai from "@/lib/openai";

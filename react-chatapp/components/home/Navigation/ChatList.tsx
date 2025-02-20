@@ -5,7 +5,7 @@ import ChatItem from "./ChatItem"
 import { useDispatch, useSelector } from "react-redux";
 import eventBus from "@/store/eventBus";
 import { useRef } from "react"
-import { setSelectedChat } from "@/store/modules/mainStore"
+import { setSelectedChat, setIsLoading } from "@/store/modules/mainStore"
 import sendFetch from "@/util/fetch"
 
 function ChatList() {
@@ -187,7 +187,7 @@ function ChatList() {
             {groupList.map(([date, list]) => {
                 return (
                     <div key={date}>
-                        <div className='sticky top-0 z-10 p-3 text-sm dark:bg-gray-900 dark:text-gray-500 font-semibold'>
+                        <div className='sticky top-0 z-10 p-3 text-sm theme-nav dark:bg-gray-900 dark:text-gray-500 font-semibold'>
                             {date}
                         </div>
                         <ul>
@@ -200,6 +200,7 @@ function ChatList() {
                                         selected={selected}
                                         onSelected={(chat) => {
                                             dispatch(setSelectedChat(chat))
+                                            dispatch(setIsLoading(false))
                                         }}
                                     />
                                 )

@@ -44,7 +44,6 @@ export default function RightDrawer() {
     const [previewOpen, setPreviewOpen] = useState(false);
     // 预览图片地址
     const [previewImage, setPreviewImage] = useState('');
-    const [loading, setLoading] = useState(false);
     const [fileList, setFileList] = useState<UploadFile[]>([
         {
             uid: '-1',
@@ -111,15 +110,15 @@ export default function RightDrawer() {
                     const avatarUrl = data.data?.avatar || "";
                     // 发布事件，通知其他组件更新用户数据
                     eventBus.publish('userUpdated', { avatar: avatarUrl });
-                    messageApi.success('头像更新成功！');
+                    messageApi.success(t('AvatarUpdatedSuccessfully'));
                 }
                 else {
-                    messageApi.error(data.error || '头像更新失败！');
+                    messageApi.error(data.error || t('networkMalfunction'));
                 }
             }
             catch (error) {
                 console.error('更新头像时发生错误:', error);
-                messageApi.error('更新头像时发生错误！');
+                messageApi.error(t('networkMalfunction'));
             }
         });
     };
@@ -155,7 +154,7 @@ export default function RightDrawer() {
     // 账号管理
     function userInfoManagementClick() {
         if (!userId) {
-            messageApi.info('请先登录！');
+            messageApi.info(t('pleaseLogin'));
             return;
         }
         setChildrenDrawerTitle(t('accountSettings'))
@@ -167,7 +166,7 @@ export default function RightDrawer() {
     // 密码管理选项
     function passwordManagementClick() {
         if (!userId) {
-            messageApi.info('请先登录！');
+            messageApi.info(t('pleaseLogin'));
             return;
         }
         setChildrenDrawerTitle(t('changePassword'))
@@ -178,7 +177,7 @@ export default function RightDrawer() {
     // 注销账户选项
     function unsubscribeUserInfo() {
         setFunctionType('deleteAccount');
-        setContentText('是否注销账户？');
+        setContentText(t('isCancelAccount'));
         setShowCancel(true);
         setOpenModal(true);
     }
@@ -192,8 +191,7 @@ export default function RightDrawer() {
         }
         const response = await sendFetch('/api/user/delete', optinion)
         if (!response) {
-            // 注销用户信息，要求重新登录
-            messageApi.info('网络异常，请稍后再试');
+            messageApi.info(t('networkMalfunction'));
             return;
         }
         return response;
@@ -204,7 +202,7 @@ export default function RightDrawer() {
         setFunctionType('updatePassword');
         const { password, confirmPassword } = values
         if (password !== confirmPassword) {
-            messageApi.info('俩次密码输入不一致，请重新输入密码！');
+            messageApi.info(t('inconsistentPasswords'));
             return;
         }
 
@@ -217,12 +215,11 @@ export default function RightDrawer() {
 
         const response = await sendFetch('/api/user/update', optinion)
         if (!response) {
-            // 清空用户信息，要求重新登录
-            messageApi.info('网络异常，请稍后再试');
+            messageApi.info(t('networkMalfunction'));
             return;
         }
 
-        setContentText('修改密码成功，请重新登录！');
+        setContentText(t('PasswordChangedSuccessfully'));
         setOpenModal(true);
         setShowCancel(false);
         // 清空用户信息，要求重新登录
@@ -235,13 +232,13 @@ export default function RightDrawer() {
         if (functionType === 'deleteAccount') {
             setConfirmLoading(true);
             deleteAccount().then(() => {
-                messageApi.info('注销账户成功，即将跳转登录页');
+                messageApi.info(t('cancelAccountSuccessfully'));
                 setOpenModal(false);
                 setConfirmLoading(false);
                 window.location.href = '/login';
             }).catch(() => {
                 setConfirmLoading(false);
-                messageApi.info('注销账户失败，请稍后再试');
+                messageApi.info(t('cancelAccountFailed'));
             });
             return
         }
@@ -274,8 +271,8 @@ export default function RightDrawer() {
                 keyboard={showCancel}
                 maskClosable={showCancel}
                 confirmLoading={confirmLoading}
-                okText={'确认'}
-                cancelText={'取消'}
+                okText={t('confirm')}
+                cancelText={t('cancel')}
                 onCancel={() => {
                     setOpenModal(false);
                 }}

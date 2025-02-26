@@ -15,7 +15,7 @@ const mainStore = createSlice({
         selectedChat: {} as Chat,
         // 选择的聊天列表的标题
         selectedChatTitle: '',
-        // 加载开始
+        // 返回的消息加载开始
         isLoading: false,
     },
     reducers: {

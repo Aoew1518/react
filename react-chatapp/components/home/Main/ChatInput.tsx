@@ -44,12 +44,17 @@ export default function ChatInput({ hideButton = false }) {
             // 收到事件通知时，重置当前页码，重新获取列表数据
         };
 
+        const inputMessageCallback = (data: string) => {
+            setMessageText(data)
+        }
+
         // 订阅事件
         eventBus.subscribe("createNewChat", callback);
-
+        eventBus.subscribe("setInputMessage", inputMessageCallback)
         // 组件卸载时取消订阅
         return () => {
             eventBus.unsubscribe("createNewChat", callback);
+            eventBus.unsubscribe("setInputMessage", inputMessageCallback)
         };
     }, [userId]);
 
@@ -276,7 +281,7 @@ export default function ChatInput({ hideButton = false }) {
                 return
             }
             else {
-        dispatch(setIsLoading(true))
+                dispatch(setIsLoading(true))
             }
 
             dispatch(removeMessageList(lastMessage))
@@ -340,6 +345,7 @@ export default function ChatInput({ hideButton = false }) {
                         {/* 消息输入框 */}
                         <TextareaAutoSize
                             className='outline-none flex-1 max-h-64 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0'
+                            id="message-input"
                             placeholder={t('enterMessage')}
                             rows={1}
                             value={messageText}

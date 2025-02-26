@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setShowRightDrawer } from "@/store/modules/navStore";
 import { setSelectedChat } from '@/store/modules/mainStore';
-import RightDrawer from "./Settings";
+import RightDrawer from "../Settings";
 import sendFetch from "@/util/fetch";
 import eventBus from "@/store/eventBus";
 import { useTranslation } from 'react-i18next';

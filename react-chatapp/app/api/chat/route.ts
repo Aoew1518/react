@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
                 const completion = await openai.chat.completions.create({
                     messages: [{ role: "system", content: "You are a helpful assistant." }, ...messages],
                     model: model || "deepseek-chat",
+                    // model: 'deepseek-reasoner',
                     // 限制生成文本的最大长度
                     max_tokens: 1024,
                     stream: true,

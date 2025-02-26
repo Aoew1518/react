@@ -6,9 +6,13 @@ const navStore = createSlice({
     initialState: {
         // 是否展示则边栏
         isShowNav: true,
+        // 主题选择
         themeMode: 'light',
+        // 语言选择
         language: 'chinese',
+        // 是否展示右设置抽屉
         showRightDrawer: false,
+        // 是否展示下拉菜单
         isShowDropdown: false,
     },
     reducers: {
@@ -26,7 +30,7 @@ const navStore = createSlice({
         },
         setIsShowDropdown(state, action) {
             state.isShowDropdown = action.payload
-        }
+        },
     }
 });
 

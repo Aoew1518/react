@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { useState, memo } from "react"
 import ReactMarkdown, { Options } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
@@ -6,8 +6,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism"
 import { message } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { ReloadOutlined, CopyOutlined } from '@ant-design/icons';
-import { Button, Tooltip } from "antd"
+import MessageFunction from "@/components/home/Main/MessageFunction"
+import eventBus from "@/store/eventBus";
 
 interface MarkdownProps extends Options {
     isAssistant?: boolean;
@@ -15,22 +15,33 @@ interface MarkdownProps extends Options {
 }
 
 function Markdown({ children, className = "", isAssistant = false, isShowFunction = false, ...props }: MarkdownProps) {
+    const dispatch = useDispatch();
     const [messageApi, contextHolder] = message.useMessage();
-    const { streamingId } = useSelector((state: any) => state.mainStore);
+    const [messageContent, setMessageContent] = useState<string>(String(children).replace(/\n$/, ""));
+    // const { streamingId } = useSelector((state: any) => state.mainStore);
 
+    // 复制代码块
     function copyToClipboard(text: string) {
         navigator.clipboard.writeText(text).then(() => {
-            messageApi.success("复制成功！");
+            messageApi.success("Copy code successfully!");
         });
     };
 
+    // 复制全部
     function copyAll() {
-        const messageContent = String(children).replace(/\n$/, "");
         navigator.clipboard.writeText(messageContent).then(() => {
-            messageApi.success("复制成功！");
-        }).catch(err => {
-            console.error('复制失败: ', err);
+            messageApi.success("Copy all successfully!");
+        })
+        .catch(err => {
+            messageApi.error("copy all failed!");
+            console.error('copy all failed: ', err);
         });
+    }
+
+    // 编辑消息并复制到输入框中
+    function editMessage() {
+        eventBus.publish("setInputMessage", messageContent)
+        messageApi.success("已编辑到输入框中！");
     }
 
     return (
@@ -86,34 +97,12 @@ function Markdown({ children, className = "", isAssistant = false, isShowFunctio
             >
                 {children}
             </ReactMarkdown>
-            {(
-                <div
-                    className={`${isAssistant && isShowFunction ? "" : "hidden"} absolute bottom-[-15px]`}
-                >
-                    <Tooltip placement="top" title="Copy">
-                        <Button
-                            type="text"
-                            className="w-[28px] h-[28px] p-1 mr-2 dark:hover:!bg-gray-600"
-                            onClick={copyAll}
-                        >
-                            <CopyOutlined
-                                className="text-xl dark:text-white opacity-50"
-                            />
-                        </Button>
-                    </Tooltip>
-
-                    <Tooltip placement="top" title="Reload">
-                        <Button
-                            type="text"
-                            className="w-[28px] h-[28px] p-1 dark:hover:!bg-gray-600"
-                        >
-                            <ReloadOutlined
-                                className="text-xl dark:text-white opacity-50"
-                            />
-                        </Button>
-                    </Tooltip>
-                </div >
-            )}
+            <MessageFunction
+                isAssistant={isAssistant}
+                isShowFunction={isShowFunction}
+                copyAll={copyAll}
+                editMessage={editMessage}
+            />
         </>
     )
 }

@@ -9,7 +9,7 @@ export default function Welcome() {
     const { t } = useTranslation();
 
     return (
-        <div className='w-full max-w-4xl mx-auto mb-[150px] flex flex-col items-center px-4 pt-5'>
+        <div className='w-full max-w-4xl mx-auto mb-[140px] flex flex-col items-center px-4 pt-5'>
             <ModelSelect />
                 <h1
                     className={`${isMobile ? 'text-xl mt-10' : 'text-2xl mt-20'} font-bold`}

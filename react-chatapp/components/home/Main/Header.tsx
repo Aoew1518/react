@@ -8,7 +8,7 @@ import { setSelectedChat, setMessageList, setSelectedChatTitle } from '@/store/m
 import { useIsMobile } from "@/util/devices"
 import { useEffect } from "react";
 
-export default function Menu() {
+export default function Header() {
     const dispatch = useDispatch();
     const isMobile = useIsMobile();
     const { selectedChat, selectedChatTitle } = useSelector((state: any) => state.mainStore);
@@ -46,10 +46,12 @@ export default function Menu() {
                         onClick={() => clearMessageAndChat()}
                     />
                 </div>
-                <div
-                    className="absolute z-50 top-[50px] inset-x-0 bg-gradient-to-t from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] pt-8 dark:from-[rgba(53,55,64,0)] dark:to-[#272a39] dark:to-[95.85%]"
-                />
+                {selectedChat?.id && (
+                    <div
+                        className="absolute z-50 top-[50px] inset-x-0 bg-gradient-to-t from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] pt-8 dark:from-[rgba(53,55,64,0)] dark:to-[#272a39] dark:to-[95.85%]"
+                    />
+                )}
             </div>
         </>
-    )
+    );
 }

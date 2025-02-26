@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { setMessageList, setSelectedChatTitle } from "@/store/modules/mainStore"
 import { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
-import ChatInput from "./ChatInput"
+// import ChatInput from "./ChatInput"
 import { LoadingOutlined } from '@ant-design/icons';
 
 export default function MessageList() {
@@ -39,7 +39,7 @@ export default function MessageList() {
     const defaultMessage = '服务器异常，请稍后再试！';
     const dispatch = useDispatch()
     const { messageList, streamingId, selectedChat, isLoading } = useSelector((state: any) => state.mainStore)
-    const [isShowFunction, setIsShowFunction] = useState(false);
+    const [isShowFunction, setIsShowFunction] = useState(-1);
 
     useEffect(() => {
         if (selectedChat && selectedChat.id) {
@@ -66,6 +66,19 @@ export default function MessageList() {
         dispatch(setMessageList(data.list))
     }
 
+    function handleShowFunction(index: Number, messageLen: Number, isLoadingMesssage: Boolean) {
+        // 如果是最后一条消息，并且没有正在加载消息，则加载更多消息
+        if (index === messageLen && !isLoadingMesssage) {
+            return true
+        }
+        else if(index === messageLen && isLoadingMesssage) {
+            return false
+        }
+        else {
+            return isShowFunction === index
+        }
+    }
+
     return (
         <>
             <div className='overflow-y-auto w-full min-w-[375px] mb-12 pb-44 dark:text-gray-300'>
@@ -73,27 +86,30 @@ export default function MessageList() {
                     {messageList.map((message: Message, index: number) => {
                         const isUser = message?.role === "user"
                         const isDefaultMessage = (message === undefined) || (!message.content)
-                        const len = messageList.length
+                        const messageLen = messageList.length - 1
+                        const isLoadingMesssage = message.id === streamingId
 
                         return (
                             <div
                                 key={message?.id || uuidv4()}
                                 className="relative bg-white dark:bg-gray-800"
-                                onMouseEnter={() => setIsShowFunction(true)}
-                                onMouseLeave={() => setIsShowFunction(false)}
+                                onMouseEnter={() => setIsShowFunction(index)}
+                                onMouseLeave={() => setIsShowFunction(-1)}
                             >
-                                <div className='w-full max-w-4xl mx-auto flex px-4 py-6 text-lg'>
+                                <div className='w-full max-w-4xl mx-auto flex px-4 py-8 text-lg'>
                                     <div className='flex justify-start text-3xl leading-[1] w-10'>
                                         {!isUser && (<SiOpenai />)}
                                     </div>
-                                    <div className={`${isUser ? "user-message" : "assistant-message"} flex-1 min-w-[300px]`}>
+                                    <div className={`${isUser ? "user-message" : "assistant-message"} relative flex-1 min-w-[300px]`}>
                                         {/* 展现 markdown 消息，并末尾显示光标 */}
                                         {/* 结测试，这里的插值写法不要换行，不然会样式错乱 */}
                                         <Markdown
                                             isAssistant={!isUser}
-                                            isShowFunction={isShowFunction}
+                                            isShowFunction={handleShowFunction(index, messageLen, isLoadingMesssage)}
+                                            // isShowFunction={isShowFunction === index || (index === messageLen && !isLoadingMesssage)}
+                                            // isLoadingMesssage={isLoadingMesssage}
                                         >
-                                            {isDefaultMessage ? defaultMessage : `${message.content}${message.id === streamingId ? "▍" : ""}`}
+                                            {isDefaultMessage ? defaultMessage : `${message.content}${isLoadingMesssage ? "▍" : ""}`}
                                         </Markdown>
                                     </div>
                                 </div>
@@ -112,7 +128,7 @@ export default function MessageList() {
                     </div>
                 </div>
             </div>
-            <ChatInput />
+            {/* <ChatInput /> */}
         </>
     )
 }

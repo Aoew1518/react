@@ -38,7 +38,7 @@ export default function ModelSelect() {
     return (
         <>
             {contextHolder}
-            <div className={`flex justify-between items-center bg-gray-100 dark:bg-gray-900 p-1 rounded-xl`}>
+            <div className={`fixed top-[50px] flex justify-between items-center bg-gray-100 dark:bg-gray-900 p-1 rounded-xl`}>
                 {models.map((item) => {
                     const selected = item.id === currentModel
                     return (

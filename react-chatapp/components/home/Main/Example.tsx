@@ -20,7 +20,7 @@ export default function Example() {
         }
 
         if (showFull && !isMobile) {
-            return examples
+            return examples.slice(0, 30)
         }
         else {
             return examples.slice(0, 15)

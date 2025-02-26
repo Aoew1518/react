@@ -7,11 +7,12 @@ import { FiEdit } from "react-icons/fi";
 interface MessageFunctionProps {
     copyAll: () => void;
     editMessage: () => void;
+    reSendMessage: () => void;
     isAssistant?: boolean;
     isShowFunction?: boolean;
 }
 
-export default function MessageFunction({ copyAll, editMessage, isAssistant = false, isShowFunction = false }: MessageFunctionProps) {
+export default function MessageFunction({ copyAll, editMessage, reSendMessage, isAssistant = false, isShowFunction = false }: MessageFunctionProps) {
 
     return (
         <>
@@ -33,6 +34,7 @@ export default function MessageFunction({ copyAll, editMessage, isAssistant = fa
                         <Button
                             type="text"
                             className="w-[32px] h-[28px] !p-1 mr-1 dark:hover:!bg-gray-600"
+                            onClick={reSendMessage}
                         >
                             <RxReload className="text-xl dark:text-white opacity-50" />
                         </Button>

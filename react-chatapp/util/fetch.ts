@@ -16,13 +16,13 @@ export default async function sendFetch(url: string, options?: RequestInit) {
 
     // 状态码是否正常
     if (!response.ok) {
-        console.warn(response.statusText)
+        console.error(response.statusText)
         return
     }
     
     // 获取返回的消息是否存在
     if (!response.body) {
-        console.warn("body error")
+        console.error("body error")
         return
     }
 

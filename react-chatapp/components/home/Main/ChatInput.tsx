@@ -44,19 +44,36 @@ export default function ChatInput({ hideButton = false }) {
             // 收到事件通知时，重置当前页码，重新获取列表数据
         };
 
+        // 编辑消息到输入框中
         const inputMessageCallback = (data: string) => {
             setMessageText(data)
-        }
+        };
 
         // 订阅事件
         eventBus.subscribe("createNewChat", callback);
-        eventBus.subscribe("setInputMessage", inputMessageCallback)
+        eventBus.subscribe("setInputMessage", inputMessageCallback);
+
         // 组件卸载时取消订阅
         return () => {
             eventBus.unsubscribe("createNewChat", callback);
             eventBus.unsubscribe("setInputMessage", inputMessageCallback)
         };
     }, [userId]);
+
+    // 需要依赖 messageList 有值时才会执行
+    useEffect(() => {
+        // 重新发送消息
+        const reSendMessageCallback = (data: string) => {
+            resendAppoint(data)
+        };
+
+        // 订阅事件
+        eventBus.subscribe("reSendMessage", reSendMessageCallback)
+        // 组件卸载时取消订阅
+        return () => {
+            eventBus.unsubscribe("reSendMessage", reSendMessageCallback)
+        };
+    }, [messageList]);
 
     // 更新输入款所发送的消息所对应的消息列表的id
     useEffect(() => {
@@ -145,7 +162,7 @@ export default function ChatInput({ hideButton = false }) {
         }
         const response = await sendFetch(`/api/chat`, optinion)
         if (!response) {
-            console.warn('获取返回数据失败！');
+            console.error('获取返回数据失败！');
             return
         }
 
@@ -172,7 +189,7 @@ export default function ChatInput({ hideButton = false }) {
         }
         const updateResponse = await sendFetch("/api/chat/update", optinion)
         if (!updateResponse) {
-            console.warn('更新聊天标题失败')
+            console.error('更新聊天标题失败')
             return
         }
 
@@ -265,7 +282,7 @@ export default function ChatInput({ hideButton = false }) {
     }
 
     // 重新发送
-    async function resend() {
+    async function resend(messageId?: string) {
         const messages = [...messageList] as Message[]
         // 删除最后一个消息且且是回复的消息
         if (
@@ -277,7 +294,7 @@ export default function ChatInput({ hideButton = false }) {
             // 接口调用失败则打印错误日志
             const isDelete = await deleteMessage(lastMessage?.id || '')
             if (!isDelete) {
-                console.warn("delete error")
+                console.error("delete error")
                 return
             }
             else {
@@ -295,6 +312,58 @@ export default function ChatInput({ hideButton = false }) {
         // 更新对话标题
         if (!selectedChat?.title || selectedChat.title === '新对话') {
             updateChatTitle(messages)
+        }
+    }
+
+    // 根据消息id重新发送指定的消息
+    async function resendAppoint(messageId: string) {
+        let messages = [...messageList] as Message[];
+        console.log("resendAppoint messageList", messageList)
+
+        // 找到要删除的消息的索引
+        const messageIndex = messages.findIndex(message => message.id === messageId);
+
+        // 如果找到了该消息
+        if (messageIndex !== -1) {
+            // 要更新的用户消息
+            const previousUserMessage = messages[messageIndex - 1];
+            // 要删除指定id的消息
+            const messageToDelete = messages[messageIndex];
+            if (previousUserMessage && previousUserMessage.role === "user") {
+                // 更新服务端用户消息内容
+                const newPreviousUserMessage: Message = await createOrUpdateMessage(previousUserMessage)
+                // 从数组中移除之前的用户消息
+                dispatch(removeMessageList(previousUserMessage))
+                messages.splice(messageIndex - 1, 1);
+                // 将用户消息移到数组最后
+                dispatch(addMessageList(newPreviousUserMessage))
+                messages.push(newPreviousUserMessage);
+            }
+            else {
+                console.error("没有找到用户消息")
+                return;
+            }
+
+            const isDelete = await deleteMessage(messageToDelete?.id || '');
+            if (!isDelete) {
+                console.error("delete error");
+                return;
+            }
+            else {
+                dispatch(setIsLoading(true));
+                // 从store数组中删除该消息
+                dispatch(removeMessageList(messageToDelete));
+                // 通过id查找删除指定的消息
+                messages = messages.filter(message => message.id !== messageId);
+            }
+
+            // 再重新请求一条消息
+            sendMessage(messages);
+        }
+
+        // 更新对话标题
+        if (!selectedChat?.title || selectedChat.title === '新对话') {
+            updateChatTitle(messages);
         }
     }
 
@@ -382,8 +451,8 @@ export default function ChatInput({ hideButton = false }) {
                             .&nbsp;{t('contentGeneratedByAI')}
                         </footer>
                     )
-                    : <footer className='pb-1' />
-                }
+                        : <footer className='pb-1' />
+                    }
                 </div>
             </div>
         </>

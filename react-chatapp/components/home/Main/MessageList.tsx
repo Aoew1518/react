@@ -59,7 +59,7 @@ export default function MessageList() {
         })
 
         if (!response.ok) {
-            console.warn(response.statusText)
+            console.error(response.statusText)
             return
         }
         const { data } = await response.json()
@@ -85,13 +85,14 @@ export default function MessageList() {
                 <div>
                     {messageList.map((message: Message, index: number) => {
                         const isUser = message?.role === "user"
+                        const messageId = message?.id || uuidv4()
                         const isDefaultMessage = (message === undefined) || (!message.content)
                         const messageLen = messageList.length - 1
                         const isLoadingMesssage = message.id === streamingId
 
                         return (
                             <div
-                                key={message?.id || uuidv4()}
+                                key={messageId}
                                 className="relative bg-white dark:bg-gray-800"
                                 onMouseEnter={() => setIsShowFunction(index)}
                                 onMouseLeave={() => setIsShowFunction(-1)}
@@ -104,6 +105,7 @@ export default function MessageList() {
                                         {/* 展现 markdown 消息，并末尾显示光标 */}
                                         {/* 结测试，这里的插值写法不要换行，不然会样式错乱 */}
                                         <Markdown
+                                            messageId={messageId}
                                             isAssistant={!isUser}
                                             isShowFunction={handleShowFunction(index, messageLen, isLoadingMesssage)}
                                             // isShowFunction={isShowFunction === index || (index === messageLen && !isLoadingMesssage)}

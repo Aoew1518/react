@@ -163,7 +163,7 @@ function ChatList() {
 
         const response = await sendFetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {method: "GET"})
         if (!response) {
-            console.warn("服务器异常，请求失败！")
+            console.error("服务器异常，请求失败！")
             return
         }
 

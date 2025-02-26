@@ -10,11 +10,12 @@ import MessageFunction from "@/components/home/Main/MessageFunction"
 import eventBus from "@/store/eventBus";
 
 interface MarkdownProps extends Options {
+    messageId: string;
     isAssistant?: boolean;
     isShowFunction?: boolean;
 }
 
-function Markdown({ children, className = "", isAssistant = false, isShowFunction = false, ...props }: MarkdownProps) {
+function Markdown({ children, className = "", messageId, isAssistant = false, isShowFunction = false, ...props }: MarkdownProps) {
     const dispatch = useDispatch();
     const [messageApi, contextHolder] = message.useMessage();
     const [messageContent, setMessageContent] = useState<string>(String(children).replace(/\n$/, ""));
@@ -42,6 +43,12 @@ function Markdown({ children, className = "", isAssistant = false, isShowFunctio
     function editMessage() {
         eventBus.publish("setInputMessage", messageContent)
         messageApi.success("已编辑到输入框中！");
+    }
+
+    // 重新发送消息
+    function reSendMessage() {
+        eventBus.publish("reSendMessage", messageId);
+        messageApi.success("已重新发送！");
     }
 
     return (
@@ -102,6 +109,7 @@ function Markdown({ children, className = "", isAssistant = false, isShowFunctio
                 isShowFunction={isShowFunction}
                 copyAll={copyAll}
                 editMessage={editMessage}
+                reSendMessage={reSendMessage}
             />
         </>
     )

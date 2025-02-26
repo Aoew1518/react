@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         data.chatId = chat.id
     }
     else {
-        // 如果有 chatId，则更新对话
+        // 如果有 chatId，则更新对话的更新时间
         await prisma.chat.update({
             data: {
                 updateTime: new Date(),
@@ -33,26 +33,16 @@ export async function POST(request: NextRequest) {
         // 需要创造的数据
         create: data,
         // 需要更新的数据
-        update: data,
+        update: {
+            ...data,
+            // 更新消息的时间
+            createTime: new Date(),
+        },
         // 如果找到 id 则更新，否则创建
         where: {
             id
         }
     })
 
-    // let message
-    // if (id) {
-    //     message = await prisma.message.update({
-    //         data,
-    //         where: {
-    //             id
-    //         }
-    //     })
-    // }
-    // else {
-    //     message = await prisma.message.create({
-    //         data
-    //     })
-    // }
     return NextResponse.json({ code: 0, data: { message } })
 }

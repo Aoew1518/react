@@ -4,6 +4,8 @@ import { Button, Tooltip, message } from "antd"
 import { LuCopy } from "react-icons/lu";
 import { RxReload } from "react-icons/rx";
 import { FiEdit } from "react-icons/fi";
+import { useTranslation } from 'react-i18next';
+
 interface MessageFunctionProps {
     copyAll: () => void;
     editMessage: () => void;
@@ -13,6 +15,7 @@ interface MessageFunctionProps {
 }
 
 export default function MessageFunction({ copyAll, editMessage, reSendMessage, isAssistant = false, isShowFunction = false }: MessageFunctionProps) {
+    const { t } = useTranslation();
 
     return (
         <>
@@ -20,7 +23,7 @@ export default function MessageFunction({ copyAll, editMessage, reSendMessage, i
             <div
                 className={`${isShowFunction ? "" : "hidden"} ${isAssistant ? "absolute" : "absolute right-0"} bottom-[-35px]`}
             >
-                <Tooltip placement="top" title="Copy">
+                <Tooltip placement="top" title={t("copy")}>
                     <Button
                         type="text"
                         className="w-[32px] h-[28px] !p-1 mr-1 dark:hover:!bg-gray-600"
@@ -30,7 +33,7 @@ export default function MessageFunction({ copyAll, editMessage, reSendMessage, i
                     </Button>
                 </Tooltip>
                 {isAssistant ? (
-                    <Tooltip placement="top" title="Reload">
+                    <Tooltip placement="top" title={t('Reload')}>
                         <Button
                             type="text"
                             className="w-[32px] h-[28px] !p-1 mr-1 dark:hover:!bg-gray-600"
@@ -40,7 +43,7 @@ export default function MessageFunction({ copyAll, editMessage, reSendMessage, i
                         </Button>
                     </Tooltip>
                 ) : (
-                    <Tooltip placement="top" title="Edit Message">
+                    <Tooltip placement="top" title={t('editMessage')}>
                         <Button
                             type="text"
                             className="w-[32px] h-[28px] !p-1 mr-1 dark:hover:!bg-gray-600"

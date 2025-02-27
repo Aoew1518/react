@@ -75,6 +75,11 @@ body {
     overflow-wrap: anywhere;
 }
 
+.user-message .user-message-style pre code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .assistant-message {
     padding-left: 10px;
 }
@@ -224,14 +229,3 @@ body {
 .ant-message {
     z-index: 9999 !important; /* 设置为更高的值 */
 }
-
-/* .assistant-message::after {
-    content: '复制';
-    position: absolute;
-    padding: 0 5px;
-    background-color: #e9173a;
-    color: #000;
-    font-size: 12px;
-    line-height: 20px;
-    border-radius: 0 0 0 5px;
-} */

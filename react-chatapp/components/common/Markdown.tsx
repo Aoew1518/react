@@ -5,17 +5,17 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 // 引入代码高亮风格，详细可看：https://github.com/react-syntax-highlighter/react-syntax-highlighter/tree/master/src/styles/prism
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism"
 import { message } from "antd";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import MessageFunction from "@/components/home/Main/MessageFunction"
 import eventBus from "@/store/eventBus";
 
 interface MarkdownProps extends Options {
-    messageId: string;
+    messageId?: string;
     isAssistant?: boolean;
     isShowFunction?: boolean;
 }
 
-function Markdown({ children, className = "", messageId, isAssistant = false, isShowFunction = false, ...props }: MarkdownProps) {
+function Markdown({ children, className = "", messageId = "", isAssistant = false, isShowFunction = false, ...props }: MarkdownProps) {
     const dispatch = useDispatch();
     const [messageApi, contextHolder] = message.useMessage();
     const [messageContent, setMessageContent] = useState<string>(String(children).replace(/\n$/, ""));
@@ -33,10 +33,10 @@ function Markdown({ children, className = "", messageId, isAssistant = false, is
         navigator.clipboard.writeText(messageContent).then(() => {
             messageApi.success("Copy all successfully!");
         })
-        .catch(err => {
-            messageApi.error("copy all failed!");
-            console.error('copy all failed: ', err);
-        });
+            .catch(err => {
+                messageApi.error("copy all failed!");
+                console.error('copy all failed: ', err);
+            });
     }
 
     // 编辑消息并复制到输入框中
@@ -48,7 +48,6 @@ function Markdown({ children, className = "", messageId, isAssistant = false, is
     // 重新发送消息
     function reSendMessage() {
         eventBus.publish("reSendMessage", messageId);
-        messageApi.success("已重新发送！");
     }
 
     return (

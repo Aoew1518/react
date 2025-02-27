@@ -1,7 +1,8 @@
-import Button from "@/components/common/Button"
-import { MdRefresh } from "react-icons/md"
+import NativeButton from "@/components/common/Button"
+import { Tooltip } from "antd"
 import { PiLightningFill, PiStopBold } from "react-icons/pi"
 import { FiSend } from "react-icons/fi"
+import { MdKeyboardArrowDown, MdRefresh } from "react-icons/md";
 import TextareaAutoSize from "react-textarea-autosize"
 import { useState, useRef, useEffect } from "react"
 import { Message, MessageRequestBody } from "@/types/chat"
@@ -32,7 +33,7 @@ export default function ChatInput({ hideButton = false }) {
     const stopRef = useRef(false)
     // 保存对话id
     const chatIdRef = useRef("")
-    const { messageList, streamingId, currentModel, selectedChat } = useSelector((state: any) => state.mainStore)
+    const { messageList, streamingId, currentModel, selectedChat, isLoading } = useSelector((state: any) => state.mainStore)
     const { userId } = useSelector((state: any) => state.userStore);
     const dispatch = useDispatch()
     const [messageApi, contextHolder] = message.useMessage();
@@ -204,6 +205,8 @@ export default function ChatInput({ hideButton = false }) {
 
     // 发送消息
     async function sendMessage(messages: Message[]) {
+        // 视口高度移动到最下面
+        scrollToBottom();
         // 保证发送前的停止发送为默认值 false
         stopRef.current = false
         const body: MessageRequestBody = { messages, model: currentModel }
@@ -306,6 +309,7 @@ export default function ChatInput({ hideButton = false }) {
             // messages.splice(messages.length - 1, 1)
             messages.pop()
         }
+
         // 再重新请求一条消息
         sendMessage(messages)
 
@@ -318,7 +322,6 @@ export default function ChatInput({ hideButton = false }) {
     // 根据消息id重新发送指定的消息
     async function resendAppoint(messageId: string) {
         let messages = [...messageList] as Message[];
-        console.log("resendAppoint messageList", messageList)
 
         // 找到要删除的消息的索引
         const messageIndex = messages.findIndex(message => message.id === messageId);
@@ -375,36 +378,46 @@ export default function ChatInput({ hideButton = false }) {
         return code === 0
     }
 
+    // 滚动到当前列表的最下面
+    function scrollToBottom() {
+        const messageListDom = document.getElementById("messageList");
+        // 滚动到最底部
+        if (messageListDom) {
+            messageListDom.scrollTop = messageListDom.scrollHeight;
+        }
+    }
+
     return (
         <>
             {contextHolder}
             <div className='absolute bottom-0 inset-x-0 bg-gradient-to-b from-[rgba(255,255,255,0)] from-[13.94%] to-[#fff] to-[54.73%] pt-10 dark:from-[rgba(53,55,64,0)] dark:to-[#353740] dark:to-[58.85%]'>
-                <div className='w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
-                    {/* 是否显示按钮，正在生成则显示停止生成，否则显示重新生成 */}
-                    {messageList.length !== 0 && !hideButton &&
-                        (streamingId !== "" ? (
-                            <Button
-                                icon={PiStopBold}
-                                variant='primary'
-                                onClick={() => {
-                                    stopRef.current = true
-                                }}
-                                className='font-medium z-10'
-                            >
-                                {t('stopGenerating')}
-                            </Button>
-                        ) : (
-                            <Button
-                                icon={MdRefresh}
-                                variant='primary'
-                                onClick={() => {
-                                    resend()
-                                }}
-                                className='font-medium z-10'
-                            >
-                                {t('regenerateBtn')}
-                            </Button>
-                        ))}
+                <div className='relative w-full max-w-4xl mx-auto flex flex-col items-center px-4 space-y-4'>
+                    {selectedChat?.id && (
+                        <div className='absolute right-[16px] top-[-35px] z-50 flex items-center space-x-3'>
+                            {(streamingId === "" && isLoading === false) && (
+                                <Tooltip placement="top" title={t('reload')}>
+                                    <div
+                                        className="w-[36px] h-[36px] bg-white hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-700 dark:border-gray-500 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer"
+                                        onClick={() => {resend()}}
+                                    >
+                                        <MdRefresh
+                                            className='opacity-90 !text-4xl text-gray-500 dark:text-gray-100'
+                                        />
+                                    </div>
+                                </Tooltip>
+                            )}
+                            <Tooltip placement="top" title={t('slideToBottom')}>
+                                <div
+                                    className="w-[36px] h-[36px] bg-white hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-700 dark:border-gray-500 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer"
+                                    onClick={scrollToBottom}
+                                >
+                                    <MdKeyboardArrowDown
+                                        className='!text-4xl text-gray-500 dark:text-gray-100'
+                                    />
+                                </div>
+                            </Tooltip>
+                        </div>
+                    )}
                     <div className={`${!isMobile ? "py-4" : "py-2"
                         } flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)]`}
                     >
@@ -423,16 +436,28 @@ export default function ChatInput({ hideButton = false }) {
                             }}
                         />
                         {/* 发送按钮 */}
-                        <Button
-                            className='mx-3 !rounded-lg'
-                            icon={FiSend}
-                            // 为空或者正在生成时禁用
-                            disabled={messageText.trim() === '' || streamingId !== ''}
-                            variant='primary'
-                            onClick={() => {
-                                clickSendMessages(messageText)
-                            }}
-                        />
+                        {(streamingId !== "") ? (
+                            <NativeButton
+                                className='mx-3 !rounded-lg'
+                                icon={PiStopBold}
+                                variant='primary'
+                                onClick={() => {
+                                    stopRef.current = true
+                                }}
+                            />
+                        ) : (
+
+                            <NativeButton
+                                className={`${(messageText.trim() === '' || streamingId !== '')
+                                    ? 'cursor-not-allowed' : 'cursor-pointer'} mx-3 !rounded-lg`}
+                                icon={FiSend}
+                                // 为空或者正在生成时禁用
+                                disabled={messageText.trim() === '' || streamingId !== ''}
+                                variant='primary'
+                                onClick={() => { clickSendMessages(messageText) }}
+                            />
+
+                        )}
                     </div>
                     {/* 底部来源信息 */}
                     {!isMobile ? (

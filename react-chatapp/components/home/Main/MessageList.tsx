@@ -81,7 +81,10 @@ export default function MessageList() {
 
     return (
         <>
-            <div className='overflow-y-auto w-full min-w-[375px] mb-12 pb-44 dark:text-gray-300'>
+            <div 
+                className='overflow-y-auto w-full min-w-[375px] mb-12 pb-44 dark:text-gray-300'
+                id='messageList'
+            >
                 <div>
                     {messageList.map((message: Message, index: number) => {
                         const isUser = message?.role === "user"
@@ -108,8 +111,6 @@ export default function MessageList() {
                                             messageId={messageId}
                                             isAssistant={!isUser}
                                             isShowFunction={handleShowFunction(index, messageLen, isLoadingMesssage)}
-                                            // isShowFunction={isShowFunction === index || (index === messageLen && !isLoadingMesssage)}
-                                            // isLoadingMesssage={isLoadingMesssage}
                                         >
                                             {isDefaultMessage ? defaultMessage : `${message.content}${isLoadingMesssage ? "▍" : ""}`}
                                         </Markdown>

@@ -1,18 +1,34 @@
 // 侧边栏低部工具栏
 import NativeButton from "@/components/common/Button"
 import ChatDropdown from "./ChatDropdown"
-import { MdLightMode, MdDarkMode, MdInfo } from "react-icons/md"
+import { MdLightMode, MdDarkMode } from "react-icons/md"
 import { useDispatch, useSelector } from 'react-redux';
 import { setThemeMode } from "@/store/modules/navStore"
 import { defaultUserAvatar } from "@/util/avatar"
+import { FaShareFromSquare } from "react-icons/fa6";
+import { message } from "antd";
 
 export default function Toolbar() {
     const dispatch = useDispatch();
     const { themeMode } = useSelector((state: any) => state.navStore);
     const { userName, userAvatar } = useSelector((state: any) => state.userStore);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    function share() {
+        const shareData = {
+            title: '分享',
+            text: '分享内容',
+            url: 'https://aiHelper.chat.com',
+        }
+
+        navigator.share(shareData)
+            .then(() => messageApi.success('分享成功'))
+            .catch((err) => messageApi.error(err))
+    }
 
     return (
         <>
+            {contextHolder}
             <div className='absolute bottom-0 left-0 right-0 dark:bg-gray-800 flex p-2 justify-between hover:bg-blue-50 dark:hover:bg-gray-800'>
                 <ChatDropdown>
                     <div className="flex items-center gap-2 cursor-pointer">
@@ -32,8 +48,9 @@ export default function Toolbar() {
                     />
                     <NativeButton
                         className="hover:bg-blue-100"
-                        icon={MdInfo}
+                        icon={FaShareFromSquare}
                         variant='text'
+                        onClick={share}
                     />
                 </div>
             </div>

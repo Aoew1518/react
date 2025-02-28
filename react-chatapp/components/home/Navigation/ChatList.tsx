@@ -1,4 +1,4 @@
-import { groupByDate } from "@/common/util"
+import { groupByDate } from "@/util/time-group"
 import { Chat } from "@/types/chat"
 import { useEffect, useMemo, useState, memo } from "react"
 import ChatItem from "./ChatItem"

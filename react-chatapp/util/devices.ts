@@ -1,6 +1,6 @@
 import { useMediaQuery } from 'react-responsive';
 
-// 注：改方法只适用于SSR服务端渲染html，CSR渲染可能会返回false
+// 注：该方法只适用于SSR服务端渲染html，CSR渲染可能会返回false
 // 宽度小于等于768px时，为移动端，返回true
 export const useIsMobile = () => {
     return useMediaQuery({ query: '(max-width: 768px)' });

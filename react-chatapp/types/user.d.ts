@@ -1,3 +1,9 @@
+export interface userInfo {
+    userName: string
+    userId: string
+    avatar?: string
+}
+
 export interface userLogin {
     username: string
     password: string

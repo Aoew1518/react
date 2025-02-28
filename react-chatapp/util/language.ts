@@ -1,6 +1,13 @@
-import { Avatar } from 'antd';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+
+export const getLanguageFromValue = (value: string): string => {
+    if (value === 'system') {
+        const userLanguage = navigator.language;
+        return userLanguage.startsWith('zh') ? 'chinese' : 'english';
+    }
+    return value;
+};
 
 i18n
     .use(initReactI18next)

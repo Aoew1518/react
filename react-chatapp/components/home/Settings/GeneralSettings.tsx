@@ -2,7 +2,11 @@ import { Select, Row, Col } from 'antd';
 import { useSelector, useDispatch } from 'react-redux'
 import { setLanguage, setThemeMode } from '@/store/modules/navStore';
 import { useTranslation } from 'react-i18next';
-import i18n from "@/util/language";
+import i18n, { getLanguageFromValue } from "@/util/language";
+import {
+    changeLanguage,
+    changeThemeMode,
+} from "@/util/settings";
 
 export default function LanguageAndThemeSettings() {
     const dispatch = useDispatch();
@@ -12,12 +16,14 @@ export default function LanguageAndThemeSettings() {
 
     function handleLanguageChange(value: string) {
         dispatch(setLanguage(value));
-        // 切换语言
-        i18n.changeLanguage(value);
+        const languageToSet = getLanguageFromValue(value);
+        i18n.changeLanguage(languageToSet);
+        changeLanguage(value);
     };
 
-    function handleThemeChange(checked: string) {
-        dispatch(setThemeMode(checked));
+    function handleThemeChange(value: string) {
+        dispatch(setThemeMode(value));
+        changeThemeMode(value)
     };
 
     return (
@@ -53,7 +59,8 @@ export default function LanguageAndThemeSettings() {
                     >
                         <Option value="light">{t('light')}</Option>
                         <Option value="dark">{t('dark')}</Option>
-                        <Option value="system">{t('system')}</Option>
+                        {/* 因为有些antd组件样式不好设置tailwind，跟随系统模块暂时滞留 */}
+                        {/* <Option value="system">{t('system')}</Option> */}
                     </Select>
                 </Col>
             </Row>

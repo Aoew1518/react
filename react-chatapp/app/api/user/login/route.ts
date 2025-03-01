@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
         return NextResponse.json({
             code: 1,
-            message: "无该用户或用户名错误",
+            message: "无该用户或用户名错误！",
         });
     }
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!isPasswordValid) {
         return NextResponse.json({
             code: 1,
-            message: "密码错误",
+            message: "密码错误！",
         });
     }
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     // 设置 Cookie
     const response = NextResponse.json({
         code: 0,
-        message: "登录成功",
+        message: "登录成功！",
         data: {
             userName: user.username,
             userId: user.id,

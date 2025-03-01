@@ -35,15 +35,16 @@ export async function POST(request: NextRequest) {
 
     // 生成 JWT token
     const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET as string;
-    const token = jwt.sign({ userId: newUser.id }, jwtSecret, { expiresIn: '2h' });
+    const token = jwt.sign({ userId: newUser.id }, jwtSecret, { expiresIn: '24h' });
 
     // 设置 Cookie
     const response = NextResponse.json({
         code: 0,
         message: "注册成功",
         data: {
-            ...newUser,
-            userId: newUser.id
+            userId: newUser.id,
+            userName: newUser.username,
+            avatar: newUser.avatar
         },
     });
 

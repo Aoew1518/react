@@ -1,6 +1,4 @@
-import { useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Button, Tooltip, message } from "antd"
+import { Button, Tooltip } from "antd"
 import { LuCopy } from "react-icons/lu";
 import { RxReload } from "react-icons/rx";
 import { FiEdit } from "react-icons/fi";
@@ -19,7 +17,6 @@ export default function MessageFunction({ copyAll, editMessage, reSendMessage, i
 
     return (
         <>
-            {/* {contextHolder} */}
             <div
                 className={`${isShowFunction ? "" : "hidden"} ${isAssistant ? "absolute" : "absolute right-0"} bottom-[-35px]`}
             >

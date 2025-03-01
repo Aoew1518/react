@@ -6,10 +6,12 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { useDispatch } from 'react-redux';
 import { setIsShowNav } from "@/store/modules/navStore"
 import { Space, Button, Tooltip } from "antd";
-import { antdButtonStyle } from "@/components/common/AntdButtonStyle";
+// import { antdButtonStyle } from "@/components/common/AntdButtonStyle";
 import { setSelectedChat } from '@/store/modules/mainStore'
 import ChatDropdown from "../Navigation/ChatDropdown"
 import { useTranslation } from 'react-i18next';
+
+const antdButtonStyle = 'w-full bg-gray-50 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-900 dark:hover:!bg-gray-600 dark:!text-gray-300';
 
 export default function SimpleNavigation() {
     const dispatch = useDispatch();

@@ -417,7 +417,10 @@ export default function RightDrawer() {
                             <Form.Item
                                 name="password"
                                 label={t('enterNewPassword')}
-                                rules={[{ required: true, message: t('enterNewPassword') }]}
+                                rules={[
+                                    { required: true, message: t('enterNewPassword') },
+                                    { min: 6, message: t('PasswordReqLeastSixCharS') }
+                                ]}
                             >
                                 <Input.Password
                                     id="password"
@@ -428,7 +431,10 @@ export default function RightDrawer() {
                             <Form.Item
                                 name="confirmPassword"
                                 label={t('enterNewPasswordAgain')}
-                                rules={[{ required: true, message: t('enterNewPasswordAgain') }]}
+                                rules={[
+                                    { required: true, message: t('enterNewPassword') },
+                                    { min: 6, message: t('PasswordReqLeastSixCharS') }
+                                ]}
                             >
                                 <Input.Password
                                     id="confirmPassword"

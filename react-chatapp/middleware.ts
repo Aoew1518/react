@@ -10,7 +10,19 @@ export async function middleware(request: NextRequest) {
 
     try {
         const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET));
-        return NextResponse.next();
+        
+        const response = NextResponse.next();
+        // 设置 CORS 头
+        const allowedOrigins = ['https://react-chatapp-alpha.vercel.app', 'http://localhost:3000'];
+        const origin = request.headers.get('origin');
+
+        if (allowedOrigins.includes(origin || '')) {
+            response.headers.set('Access-Control-Allow-Origin', origin || '');
+            response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+            response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        }
+
+        return response;
     } catch (error) {
         return new Response(JSON.stringify({ error: 'Token expired or invalid!', code: -1 }), { status: 401 });
     }

@@ -19,7 +19,6 @@ import {
 import eventBus from "@/store/eventBus";
 import { message } from "antd";
 import sendFetch from "@/util/fetch"
-import { setUserId } from '@/store/modules/userStore';
 import { useIsMobile } from "@/util/devices"
 import { useTranslation } from 'react-i18next';
 
@@ -230,8 +229,7 @@ export default function ChatInput({ hideButton = false }) {
                     return
                 })
             if (!response) {
-                // 清空用户信息，要求重新登录
-                dispatch(setUserId(''));
+                eventBus.publish('networkError', "服务器错误，请稍后再试！");
                 return
             }
 
@@ -277,11 +275,14 @@ export default function ChatInput({ hideButton = false }) {
             }
             // 读取完成，更新服务端消息内容
             createOrUpdateMessage({ ...responseMessage, content })
-            // 重置消息流 id
-            dispatch(setStreamingId(''))
         }
         catch (error) {
             console.error("网络错误，请求失败:", error);
+            eventBus.publish('networkError', "服务器错误，请稍后再试！");
+        }
+        finally {
+            // 重置消息流 id
+            dispatch(setStreamingId(''))
         }
     }
 

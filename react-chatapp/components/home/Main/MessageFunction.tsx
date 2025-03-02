@@ -30,7 +30,7 @@ export default function MessageFunction({ copyAll, editMessage, reSendMessage, i
                     </Button>
                 </Tooltip>
                 {isAssistant ? (
-                    <Tooltip placement="top" title={t('Reload')}>
+                    <Tooltip placement="top" title={t('reload')}>
                         <Button
                             type="text"
                             className="w-[32px] h-[28px] !p-1 mr-1 dark:hover:!bg-gray-600"

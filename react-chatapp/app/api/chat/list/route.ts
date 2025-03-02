@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
     // findMany 查询数据库，skip和take用于分页，orderBy用于排序
     const list = await prisma.chat.findMany({
         where: {
-            userId: Number(userId),
+            // userId: Number(userId),
+            userId
         },
         // 需要跳过的条数
         skip: (page - 1) * 20,

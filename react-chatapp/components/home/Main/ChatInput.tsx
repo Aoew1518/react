@@ -123,7 +123,7 @@ export default function ChatInput({ hideButton = false }) {
         }
 
         // 服务端请求用户信息
-        // 这里id为空是以为id不应该前端去生成，而是由服务端生成，前端只是传递了个id参数给服务端
+        // 这里id为空是因为id不应该前端去生成，而是由服务端生成，前端只是传递了个id参数给服务端
         const message: Message = await createOrUpdateMessage({
             role: "user",
             content,

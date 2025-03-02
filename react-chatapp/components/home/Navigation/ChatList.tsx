@@ -1,6 +1,6 @@
 import { groupByDate } from "@/util/time-group"
 import { Chat } from "@/types/chat"
-import { useEffect, useMemo, useState, memo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import ChatItem from "./ChatItem"
 import { useDispatch, useSelector } from "react-redux";
 import eventBus from "@/store/eventBus";
@@ -215,4 +215,4 @@ function ChatList() {
     )
 }
 
-export default memo(ChatList)
+export default ChatList

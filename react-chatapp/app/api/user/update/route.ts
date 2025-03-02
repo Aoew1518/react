@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
         // 更新数据库中的用户密码
         await prisma.user.update({
             where: {
-                id: Number(id)
+                // id: Number(id)
+                id
             },
             data: {
                 password: hashedPassword

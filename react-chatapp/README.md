@@ -85,3 +85,9 @@ npx prisma studio
 npm i @prisma/client
 # 生成数据库客户端代码（更新之前的配置文件等，可使用代码支持修改数据库）
 npx prisma generate
+
+
+# 安装 prisma 客户端
+npm i @prisma/client
+# 连接云端数据库
+npx prisma db push

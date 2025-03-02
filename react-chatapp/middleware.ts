@@ -14,10 +14,10 @@ export async function middleware(request: NextRequest) {
         const response = NextResponse.next();
         // 设置 CORS 头
         const allowedOrigins = ['https://react-chatapp-alpha.vercel.app', 'http://localhost:3000'];
-        const origin = request.headers.get('origin');
+        const origin = request.headers.get('origin') as string;
 
-        if (allowedOrigins.includes(origin || '')) {
-            response.headers.set('Access-Control-Allow-Origin', origin || '');
+        if (allowedOrigins.includes(origin)) {
+            response.headers.set('Access-Control-Allow-Origin', origin);
             response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
             response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         }

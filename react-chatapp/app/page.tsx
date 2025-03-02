@@ -13,11 +13,7 @@ import eventBus from '@/store/eventBus';
 import sendFetch from "@/util/fetch";
 import { useIsMobile } from "@/util/devices";
 import i18n, { getLanguageFromValue } from "@/util/language";
-import {
-    getLocalStorageData,
-    getUserInfo,
-    updataLocalStorageData
-} from "@/util/settings";
+import { getLocalStorageData, updataLocalStorageData } from "@/util/settings";
 
 export default function Home() {
     const dispatch = useDispatch();
@@ -30,29 +26,25 @@ export default function Home() {
 
     // 初始化系统相关信息设置
     useEffect(() => {
+        // 初始化设置信息
         handleSettings()
-        const { userId, userName, avatar } = getUserInfo();
-        // 若本地没有用户信息则发送一次请求让后端检索cookie是否有效，有效则返回用户信息
-        if (!userId) {
-            handleUserUpdate()
-        }
-        else {
-            dispatch(setUserId(userId) || "");
-            dispatch(setUserName(userName || ""));
-            dispatch(setUserAvatar(avatar || ""));
-        }
+        // 初始化用户信息
+        handleUserUpdate()
 
         const callback = (data: string) => {
             setModalText(data)
             setOpen(true);
         };
 
-        // 订阅事件
+        // 重新登录
         eventBus.subscribe("reLogin", callback);
+        // 更新头像
+        eventBus.subscribe('userUpdated', handleUserUpdate);
 
         // 组件卸载时取消订阅
         return () => {
             eventBus.unsubscribe("reLogin", callback);
+            eventBus.unsubscribe('userUpdated', handleUserUpdate);
         };
     }, [])
 
@@ -114,7 +106,7 @@ export default function Home() {
                         title={
                             <>
                                 <ExclamationCircleOutlined style={{ marginRight: 8, color: '#ffb300' }} />
-                                未知问题
+                                问题
                             </>
                         }
                         closable={false}

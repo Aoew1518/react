@@ -14,6 +14,7 @@ import { updatePassWord } from "@/types/user"
 import { defaultUserAvatar } from "@/util/avatar"
 import eventBus from '@/store/eventBus'
 import { useTranslation } from 'react-i18next';
+import { updataLocalStorageData } from '@/util/settings'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -232,6 +233,8 @@ export default function RightDrawer() {
         if (functionType === 'deleteAccount') {
             setConfirmLoading(true);
             deleteAccount().then(() => {
+                // 清空本地用户信息
+                updataLocalStorageData(false, 'userInfo')
                 messageApi.info(t('cancelAccountSuccessfully'));
                 setOpenModal(false);
                 setConfirmLoading(false);

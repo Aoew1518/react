@@ -6,13 +6,14 @@ export async function POST(request: NextRequest) {
     const { userId, ...data } = body
     // 没有 id，则返回错误码
     if (!userId) {
-        return NextResponse.json({ error:"未知错误，请重试", code: -1 }, {status: 400 })
+        return NextResponse.json({ error: "未知错误，请重试", code: -1 }, { status: 400 })
     }
 
     // 查找与 userId 相关的所有聊天记录
     const chats = await prisma.chat.findMany({
         where: {
-            userId: Number(userId)
+            // userId: Number(userId)
+            userId
         }
     })
 
@@ -29,21 +30,27 @@ export async function POST(request: NextRequest) {
     // 删除与 userId 相关的所有聊天记录
     const deleteChat = prisma.chat.deleteMany({
         where: {
-            userId: Number(userId)
+            // userId: Number(userId)
+            userId
         }
     })
 
     // 删除user表中的用户信息
     const deleteUser = prisma.user.delete({
         where: {
-            id: Number(userId)
+            // id: Number(userId)
+            id: userId
         }
     })
 
     try {
         // $transaction 事务可以保证数据的一致性，要么同时成功，要么同时失败
-        // await prisma.$transaction([deleteMessages, deleteChat, deleteUser]);
-        return NextResponse.json({ message: "注销用户成功", code: 0 });
+        await prisma.$transaction([deleteMessages, deleteChat, deleteUser]);
+        // 清空 cookie
+        const response = NextResponse.json({ message: "注销用户成功", code: 0 });
+        // 设置 token 过期
+        response.cookies.set('token', '', { maxAge: -1 });
+        return response;
     } catch (error) {
         console.error("Error deleting user data:", error);
         return NextResponse.json({ error: "注销用户失败，请稍后再试", code: -1 }, { status: 500 });

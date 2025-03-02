@@ -6,7 +6,8 @@
 
 // 用户模型
 model User {
-    id       Int    @id @default(autoincrement())
+    id       String @id @default(auto()) @map("_id")  @db.ObjectId
+    // id       Int    @id @default(autoincrement())
     username String @unique
     password String
     avatar   String? @default("")
@@ -17,10 +18,11 @@ model User {
 // 对话模型
 model Chat {
     // 关联用户表
-    userId     Int
-    user       User      @relation(fields: [userId], references: [id])
+    userId     String    @db.ObjectId
+    user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     // id 字段是主键，类型为 String，默认值为 uuid()
-    id         String    @id @default(uuid())
+    // id         String    @id @default(uuid())
+    id         String    @id @default(auto()) @map("_id") @db.ObjectId
     title      String
     // updateTime 字段是更新时间，类型为 DateTime，默认值为当前时间
     updateTime DateTime  @updatedAt
@@ -29,13 +31,14 @@ model Chat {
 
 // 消息模型
 model Message {
-    id         String   @id @default(uuid())
+    // id         String   @id @default(uuid())
+    id         String   @id @default(auto()) @map("_id")  @db.ObjectId
     content    String
     role       String
     // createTime 字段是创建时间，类型为 DateTime，默认值为当前时间
     createTime DateTime @default(now())
     // 对话id
-    chatId     String
+    chatId     String   @db.ObjectId
     // 消息模型和对话模型之间是一对多的关系
     // fields 表示引用的字段，references 表示引用的模型
     chat       Chat     @relation(fields: [chatId], references: [id])
@@ -49,6 +52,6 @@ generator client {
 
 // 采用 sqlite 数据库，文件存储在 chatgpt-app.sqlite
 datasource db {
-    provider = "sqlite"
-    url      = "file:./chatgpt-app.sqlite"
+    provider = "mongodb"
+    url      = env("NEXT_PUBLIC_DATABASE_URL")
 }

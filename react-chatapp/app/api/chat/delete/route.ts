@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
         // 查找与 userId 相关的所有聊天记录
         const chats = await prisma.chat.findMany({
             where: {
-                userId: Number(userId)
+                // userId: Number(userId)
+                userId
             }
         })
 
@@ -51,7 +52,8 @@ export async function POST(request: NextRequest) {
         // 删除与 userId 相关的所有聊天记录
         const deleteChat = prisma.chat.deleteMany({
             where: {
-                userId: Number(userId)
+                // userId: Number(userId)
+                userId
             }
         })
 

@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
         // 查询用户信息
         const user = await prisma.user.findUnique({
             where: {
-                id: Number(payload.userId)
+                // id: Number(payload.userId)
+                id: payload.userId as string,
             },
             select: {
                 id: true,

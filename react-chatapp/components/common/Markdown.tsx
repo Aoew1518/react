@@ -116,4 +116,5 @@ function Markdown({ children, className = "", messageId = "", isAssistant = fals
 
 // memo 用于避免重复渲染，只有参数改变时才会重新渲染
 // 一般父组件发生渲染，子组件也会重新渲染
-export default memo(Markdown)
+// export default memo(Markdown)
+export default Markdown

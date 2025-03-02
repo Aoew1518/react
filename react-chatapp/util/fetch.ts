@@ -20,7 +20,7 @@ export default async function sendFetch(url: string, options?: RequestInit) {
             eventBus.publish('reLogin', "登录已过期，请重新登录！")
         }
         else {
-            eventBus.publish('reLogin', "服务器错误，请稍后再试！")
+            eventBus.publish('networkError', "服务器错误，请稍后再试！")
         }
         console.error(response.statusText)
         return
@@ -28,7 +28,7 @@ export default async function sendFetch(url: string, options?: RequestInit) {
     
     // 获取返回的消息是否存在
     if (!response.body) {
-        eventBus.publish('reLogin', "服务器错误，请稍后再试！")
+        eventBus.publish('networkError', "服务器错误，请稍后再试！")
         console.error("body error")
         return
     }

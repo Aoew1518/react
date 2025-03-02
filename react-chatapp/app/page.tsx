@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setUserId, setUserName, setUserAvatar } from '@/store/modules/userStore';
 import { setLanguage, setThemeMode } from '@/store/modules/navStore';
 import { useEffect, useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import eventBus from '@/store/eventBus';
 import sendFetch from "@/util/fetch";
@@ -23,6 +23,7 @@ export default function Home() {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('用户信息失效，请重新登录！');
+    const [messageApi, contextHolder] = message.useMessage();
 
     // 初始化系统相关信息设置
     useEffect(() => {
@@ -31,20 +32,27 @@ export default function Home() {
         // 初始化用户信息
         handleUserUpdate()
 
-        const callback = (data: string) => {
+        const reLoginCallback = (data: string) => {
             setModalText(data)
             setOpen(true);
         };
 
+        const networkErrorCallback = (data: string) => {
+            messageApi.error(data);
+        }
+        
         // 重新登录
-        eventBus.subscribe("reLogin", callback);
+        eventBus.subscribe("reLogin", reLoginCallback);
         // 更新头像
         eventBus.subscribe('userUpdated', handleUserUpdate);
+        // 网络错误进行提示
+        eventBus.subscribe('networkError', networkErrorCallback);
 
         // 组件卸载时取消订阅
         return () => {
-            eventBus.unsubscribe("reLogin", callback);
+            eventBus.unsubscribe("reLogin", reLoginCallback);
             eventBus.unsubscribe('userUpdated', handleUserUpdate);
+            eventBus.unsubscribe('networkError', networkErrorCallback);
         };
     }, [])
 
@@ -99,6 +107,7 @@ export default function Home() {
 
     return (
         <>
+            {contextHolder}
             <body className={`${themeMode}`}>
                 <div className="h-full flex">
                     <Modal

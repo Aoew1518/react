@@ -113,7 +113,6 @@ export default function ChatInput({ hideButton = false }) {
 
     // 点击发送消息
     async function clickSendMessages(content: string) {
-        dispatch(setIsLoading(true))
         if (currentModel === 'GPT-4' || currentModel === 'gpt-35-turbo') {
             messageApi.info({
                 content: '该模型暂未开放，请选择deepseek-chat模型',
@@ -205,6 +204,7 @@ export default function ChatInput({ hideButton = false }) {
 
     // 发送消息
     async function sendMessage(messages: Message[]) {
+        dispatch(setIsLoading(true));
         // 视口高度移动到最下面
         scrollToBottom();
         // 保证发送前的停止发送为默认值 false
@@ -219,6 +219,7 @@ export default function ChatInput({ hideButton = false }) {
             // 获取字符流
             const response = await sendFetch("/api/chat", optinion)
                 .then((res) => {
+
                     dispatch(setIsLoading(false))
                     console.log('字符流res', res)
                     return res
@@ -300,9 +301,6 @@ export default function ChatInput({ hideButton = false }) {
                 console.error("delete error")
                 return
             }
-            else {
-                dispatch(setIsLoading(true))
-            }
 
             dispatch(removeMessageList(lastMessage))
             // 从本地数组中删除最后一个消息
@@ -353,7 +351,6 @@ export default function ChatInput({ hideButton = false }) {
                 return;
             }
             else {
-                dispatch(setIsLoading(true));
                 // 从store数组中删除该消息
                 dispatch(removeMessageList(messageToDelete));
                 // 通过id查找删除指定的消息

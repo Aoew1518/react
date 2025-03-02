@@ -6,7 +6,7 @@ import openai from "@/lib/openai";
 const timeoutPromise = new Promise<Response>((_, reject) => {
     setTimeout(() => {
         reject(new Response("网络超时，请稍后再试！", { status: 504 }));
-    }, 10000);
+    }, 20000);
 });
 
 export async function POST(request: NextRequest) {

@@ -6,14 +6,22 @@ import { useDispatch, useSelector } from "react-redux"
 import { setCurrentModel } from "@/store/modules/mainStore"
 import { message } from "antd";
 import { useIsMobile } from "@/util/devices"
+import React from "react";
+import { deepseekMattingBase64 } from "@/public/images/deepseek"
+
+interface Model {
+    id: string;
+    name: string;
+    icon: React.ReactNode | React.ComponentType | any;
+}
 
 // 模型切换内容
 export default function ModelSelect() {
-    const models = [
+    const models: Model[] = [
         {
             id: "deepseek-chat",
             name: "DeepSeek",
-            icon: GiWhaleTail
+            icon: () => (<img src={deepseekMattingBase64} alt="DeepSeek" className="w-4 h-4"/>)
         },
         {
             id: "gpt-35-turbo",
@@ -26,7 +34,7 @@ export default function ModelSelect() {
             icon: PiShootingStarFill
         }
     ]
-    const isMobile  = useIsMobile()
+    const isMobile = useIsMobile()
     const [messageApi, contextHolder] = message.useMessage();
     const { currentModel } = useSelector((state: any) => state.mainStore)
     const dispatch = useDispatch();

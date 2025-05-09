@@ -159,7 +159,7 @@ export default function ChatInput({ hideButton = false }) {
             // 把用户输入的消息包装成 json 格式
             body: JSON.stringify(body),
         }
-        const response = await sendFetch(`/api/chat`, optinion)
+        const response = await sendFetch('/api/chat', optinion)
         if (!response) {
             console.error('获取返回数据失败！');
             return
@@ -396,7 +396,7 @@ export default function ChatInput({ hideButton = false }) {
                                 <Tooltip placement="top" title={t('reload')}>
                                     <div
                                         className="w-[36px] h-[36px] bg-white hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-700 dark:border-gray-500 rounded-full border-2 border-gray-300 flex items-center justify-center cursor-pointer"
-                                        onClick={() => {resend()}}
+                                        onClick={() => { resend() }}
                                     >
                                         <MdRefresh
                                             className='opacity-90 !text-4xl text-gray-500 dark:text-gray-100'

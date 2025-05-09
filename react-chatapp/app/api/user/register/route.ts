@@ -2,9 +2,14 @@ import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { corsHeaders, handleCors } from '@/util/cors';
 
 // 注册接口
 export async function POST(request: NextRequest) {
+    // 处理预检请求
+    const corsResponse = handleCors(request);
+    if (corsResponse) return corsResponse;
+
     const body = await request.json();
     const { username, password } = body;
 
@@ -46,7 +51,8 @@ export async function POST(request: NextRequest) {
             userName: newUser.username,
             avatar: newUser.avatar
         },
-    });
+        // 设置 CORS 头
+    }, { headers: corsHeaders(request) as any});
 
     response.cookies.set('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 

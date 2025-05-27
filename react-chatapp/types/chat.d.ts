@@ -9,11 +9,14 @@ export interface Message {
     content: string
     id?: string
     chatId: string
+    reasoningContent?: string
 }
 
 export interface MessageRequestBody {
     messages: Message[]
     model: string
+    temperature: number
+    max_tokens: number
 }
 
 export type Callback = (data?: any) => void;

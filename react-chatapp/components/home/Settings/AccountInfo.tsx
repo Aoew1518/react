@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import Button from '@/components/common/Button';
 import { useTranslation } from 'react-i18next';
 
-export default function LanguageAndThemeSettings({
+export default function AccountInfo({
     userInfoManagementClick,
     passwordManagementClick
 }: {

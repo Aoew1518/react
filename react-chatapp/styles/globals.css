@@ -56,11 +56,12 @@ body {
     background-size: 0 2px, 100% 2px;
 }
 
+/* 导航栏背景样式 */
 .theme-nav {
     background-color: #f9fbff;
 }
 
-/* 用户提问消息样式 */
+/* markdown 用户提问消息样式 */
 .user-message > div:first-child {
     float: right;
 }
@@ -87,6 +88,41 @@ body {
 .dark .user-message .user-message-style {
     color: #e5e7eb;
     background-color: #e5e7eb47;
+}
+
+/* 深度思考消息样式 */
+.deepseek-content {
+    p {
+        font-size: 14px;
+        color: #8b8b8b;
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+        unicode-bidi: isolate;
+    }
+}
+
+.dark .deepseek-content {
+    border-color: #a6a6a6 !important;
+
+    .ant-collapse-arrow {
+        color: rgb(228 228 231) !important;
+    }
+
+    .ant-collapse-header-text {
+        color: rgb(228 228 231) !important;
+    }
+
+    .ant-collapse-content {
+        background-color: transparent !important;
+        border-top: 1px solid #a6a6a6 !important;
+    }
+    
+    p {
+        color: #a6a6a6;
+    }
 }
 
 /* antd下拉菜单暗黑样式 */
@@ -185,6 +221,22 @@ body {
     }
 }
 
+/* antd 数字输入框 */
+.dark {
+    .ant-input-number {
+        background: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+    .ant-input-number-input {
+        color: #e5e7eb !important;
+        background: #1f2937 !important;
+        box-shadow: none !important;
+    }
+    .ant-input-number-handler-wrap {
+        /* background: #1f2937 !important; */
+    }
+}
+
 /* antd modal按钮 */
 .dark {
     .ant-modal-content {
@@ -227,5 +279,17 @@ body {
 
 /* antd message全局提示 */
 .ant-message {
-    z-index: 9999 !important; /* 设置为更高的值 */
+    z-index: 9999 !important;
+}
+
+/* 对模型设置的 antd select 下拉菜单展示不超出 */
+.model-settings {
+    .ant-select-selection-item {
+        overflow: visible !important;
+        font-size: xx-small !important;
+    }
+}
+
+.ant-select-item-option-content {
+    overflow: visible !important;
 }

@@ -91,3 +91,10 @@ npx prisma generate
 npm i @prisma/client
 # 连接云端数据库
 npx prisma db push
+
+
+# 使用推理模型 deepseek-reasoner
+# 首先升级 pip
+python -m pip install --upgrade pip
+# 下载升级 OpenAI SDK 以支持新参数
+pip3 install -U openai

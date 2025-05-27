@@ -7,6 +7,7 @@ import eventBus from "@/store/eventBus";
 import { useRef } from "react"
 import { setSelectedChat, setIsLoading } from "@/store/modules/mainStore"
 import sendFetch from "@/util/fetch"
+import { message } from 'antd';
 
 function ChatList() {
     // 测试数据
@@ -101,7 +102,7 @@ function ChatList() {
     const { selectedChat } = useSelector((state: any) => state.mainStore)
     const { userId } = useSelector((state: any) => state.userStore)
     const { language } = useSelector((state: any) => state.navStore);
-
+    const [messageApi, contextHolder] = message.useMessage();
     // 得到分组好的列表
     const groupList = useMemo(() => {
         return groupByDate(chatList)
@@ -161,7 +162,7 @@ function ChatList() {
         }
         loadingRef.current = true
 
-        const response = await sendFetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, {method: "GET"})
+        const response = await sendFetch(`/api/chat/list?page=${pageRef.current}&userId=${userId}`, { method: "GET" })
         if (!response) {
             console.error("服务器异常，请求失败！")
             return
@@ -182,36 +183,54 @@ function ChatList() {
         loadingRef.current = false
     }
 
+    function handleMessage(messageCode: number) {
+        switch (messageCode) {
+            case 0:
+                messageApi.success('删除聊天成功！');
+                break;
+            case 1:
+                messageApi.success('标题更新成功！');
+                break;
+            default:
+                messageApi.error('未知错误，操作失败！');
+                break;
+        }
+    }
+
     return (
-        <div className='flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto'>
-            {groupList.map(([date, list]) => {
-                return (
-                    <div key={date}>
-                        <div className='sticky top-0 z-10 p-3 text-sm theme-nav dark:bg-gray-900 dark:text-gray-500 font-semibold'>
-                            {date}
+        <>
+            {contextHolder}
+            <div className='flex-1 mb-[48px] mt-2 flex flex-col overflow-y-auto'>
+                {groupList.map(([date, list]) => {
+                    return (
+                        <div key={date}>
+                            <div className='sticky top-0 z-10 p-3 text-sm theme-nav dark:bg-gray-900 dark:text-gray-500 font-semibold'>
+                                {date}
+                            </div>
+                            <ul>
+                                {list.map((item) => {
+                                    const selected = selectedChat?.id === item.id
+                                    return (
+                                        <ChatItem
+                                            key={item.id}
+                                            item={item}
+                                            selected={selected}
+                                            onSelected={(chat) => {
+                                                dispatch(setSelectedChat(chat))
+                                                dispatch(setIsLoading(false))
+                                            }}
+                                            handleMessage={handleMessage}
+                                        />
+                                    )
+                                })}
+                            </ul>
+                            {groupList.length !== 1 && (<div className='w-full h-6'></div>)}
                         </div>
-                        <ul>
-                            {list.map((item) => {
-                                const selected = selectedChat?.id === item.id
-                                return (
-                                    <ChatItem
-                                        key={item.id}
-                                        item={item}
-                                        selected={selected}
-                                        onSelected={(chat) => {
-                                            dispatch(setSelectedChat(chat))
-                                            dispatch(setIsLoading(false))
-                                        }}
-                                    />
-                                )
-                            })}
-                        </ul>
-                        {groupList.length !== 1 && (<div className='w-full h-6'></div>)}
-                    </div>
-                )
-            })}
-            <div ref={loadMoreRef}>&nbsp;</div>
-        </div>
+                    )
+                })}
+                <div ref={loadMoreRef}>&nbsp;</div>
+            </div>
+        </>
     )
 }
 

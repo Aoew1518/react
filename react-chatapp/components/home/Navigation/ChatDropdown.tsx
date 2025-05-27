@@ -103,7 +103,6 @@ export default function ChatDropdown({
     function handleOk() {
         switch (selectKey) {
             case '0':
-
                 break;
             case '1':
                 break;
@@ -207,7 +206,9 @@ export default function ChatDropdown({
                     {children}
                 </a>
             </Dropdown>
-            <RightDrawer />
+            <RightDrawer
+                radioValue={selectKey === '0' ? 'accountInfo' : 'generalSettings'}
+            />
         </>
     )
 }

@@ -1,7 +1,7 @@
 import GeneralSettings from "./GeneralSettings"
 import AccountInfo from "./AccountInfo"
 import { message, Drawer, Radio, Button, Form, Row, Col, Input, Upload, Modal, Image } from 'antd';
-import type { GetProp, UploadFile, UploadProps, TourProps } from 'antd';
+import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import type { CheckboxGroupProps } from 'antd/es/checkbox';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,12 +18,15 @@ import { updataLocalStorageData } from '@/util/settings'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export default function RightDrawer() {
+type RadioValue = 'generalSettings' | 'accountInfo';
+
+export default function RightDrawer({ radioValue }: { radioValue: RadioValue }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const { showRightDrawer } = useSelector((state: any) => state.navStore);
     const { userId, userName, userAvatar } = useSelector((state: any) => state.userStore);
-    const [selectRadio, setSelectRadio] = useState<'generalSettings' | 'accountInfo'>('generalSettings');
+    // 点开系统设置选中radio的值
+    const [selectRadio, setSelectRadio] = useState<RadioValue>(radioValue || 'generalSettings');
     const [openChildrenDrawer, setOpenChildrenDrawer] = useState(false);
     const [childrenDrawerTitle, setChildrenDrawerTitle] = useState('设置');
     const [selectKey, setSelectKey] = useState('');
@@ -66,6 +69,10 @@ export default function RightDrawer() {
             ]);
         }
     }, [userAvatar])
+
+    useEffect(() => {
+        setSelectRadio(radioValue);
+    }, [radioValue]);
 
     // 上传头像前base64格式转化处理
     const getBase64 = (img: FileType, callback: (url: string) => void) => {
@@ -315,6 +322,7 @@ export default function RightDrawer() {
                 <Radio.Group
                     block
                     options={options}
+                    value={selectRadio}
                     defaultValue="generalSettings"
                     optionType="button"
                     buttonStyle="solid"

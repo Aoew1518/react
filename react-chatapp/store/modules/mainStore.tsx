@@ -7,6 +7,10 @@ const mainStore = createSlice({
     initialState: {
         // 当前模型选择
         currentModel: 'deepseek-chat',
+        // 模型自由度
+        temperature: 1,
+        // 模型最大输出长度
+        maxTokens: 1024,
         // 消息列表
         messageList: [] as Message[],
         // 数据流 id
@@ -22,6 +26,12 @@ const mainStore = createSlice({
         setCurrentModel(state, action) {
             state.currentModel = action.payload
         },
+        setTemperature(state, action) {
+            state.temperature = action.payload
+        },
+        setMaxTokens(state, action) {
+            state.maxTokens = action.payload
+        },
         setMessageList(state, action) {
             state.messageList = action.payload
         },
@@ -30,6 +40,16 @@ const mainStore = createSlice({
         },
         updataMessageList(state, action) {
             const messageList = state.messageList.map((message) => {
+                if (message.id === action.payload.id) {
+                    return {
+                        ...message,
+                        ...action.payload,
+                        // 确保不会覆盖已存在的 reasoningContent，除非提供了新的值
+                        reasoningContent: action.payload.reasoningContent !== undefined 
+                            ? action.payload.reasoningContent 
+                            : message.reasoningContent
+                    }
+                }
                 if (message.id === action.payload.id) {
                     return action.payload
                 }
@@ -68,6 +88,8 @@ const mainStore = createSlice({
 // 调用同步reducers中的方法传入异步数据
 export const {
     setCurrentModel,
+    setTemperature,
+    setMaxTokens,
     setMessageList,
     addMessageList,
     updataMessageList,

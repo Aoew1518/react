@@ -6,13 +6,13 @@
 
 // 用户模型
 model User {
-    id       String @id @default(auto()) @map("_id")  @db.ObjectId
+    id       String  @id @default(auto()) @map("_id") @db.ObjectId
     // id       Int    @id @default(autoincrement())
-    username String @unique
+    username String  @unique
     password String
     avatar   String? @default("")
     // 用户和对话是一对多关系，一个用户可以有多个对话
-    Chat Chat[]
+    Chat     Chat[]
 }
 
 // 对话模型
@@ -32,16 +32,17 @@ model Chat {
 // 消息模型
 model Message {
     // id         String   @id @default(uuid())
-    id         String   @id @default(auto()) @map("_id")  @db.ObjectId
-    content    String
-    role       String
+    id               String   @id @default(auto()) @map("_id") @db.ObjectId
+    content          String
+    reasoningContent String?
+    role             String
     // createTime 字段是创建时间，类型为 DateTime，默认值为当前时间
-    createTime DateTime @default(now())
+    createTime       DateTime @default(now())
     // 对话id
-    chatId     String   @db.ObjectId
+    chatId           String   @db.ObjectId
     // 消息模型和对话模型之间是一对多的关系
     // fields 表示引用的字段，references 表示引用的模型
-    chat       Chat     @relation(fields: [chatId], references: [id])
+    chat             Chat     @relation(fields: [chatId], references: [id])
 }
 
 // 有一个 Prisma 架构，但还没有数据库。在终端中运行以下命令以创建 SQLite 数据库以及模型表示的 Message 和 Chat 表。

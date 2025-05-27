@@ -3,20 +3,21 @@ import { useEffect, useState } from "react"
 import { AiOutlineEdit } from "react-icons/ai"
 import { MdCheck, MdClose, MdDeleteOutline } from "react-icons/md"
 import { PiChatBold, PiTrashBold } from "react-icons/pi"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { setSelectedChat, setSelectedChatTitle } from "@/store/modules/mainStore"
 import eventBus from "@/store/eventBus";
-import { message } from 'antd';
+// import { message } from 'antd';
 
 type Props = {
     item: Chat
     selected: boolean
     // 选中的回调函数
-    onSelected: (chat: Chat) => void
+    onSelected: (chat: Chat) => void,
+    handleMessage: (messageCode: number) => void
 }
 
-export default function ChatItem({ item, selected, onSelected }: Props) {
-    const [messageApi, contextHolder] = message.useMessage();
+export default function ChatItem({ item, selected, onSelected, handleMessage }: Props) {
+    // const [messageApi, contextHolder] = message.useMessage();
     // 选中和删除状态
     const [editing, setEditing] = useState(false)
     const [deleting, setDeleting] = useState(false)
@@ -51,7 +52,8 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
 
         const { code } = await response.json()
         if (code === 0) {
-            messageApi.success('标题更新成功！');
+            // messageApi.success('标题更新成功！');
+            handleMessage(1);
             // 手动更改标题后，更新标题
             dispatch(setSelectedChatTitle(title));
             // 更新成功，重置状态，发布一次订阅
@@ -75,7 +77,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
 
         const { code } = await response.json()
         if (code === 0) {
-            messageApi.success('删除聊天成功！');
+            handleMessage(0);
             // 删除成功，重置状态，发布一次订阅
             eventBus.publish("fetchChatList");
             // 将当前选择的聊天置为空
@@ -85,7 +87,7 @@ export default function ChatItem({ item, selected, onSelected }: Props) {
 
     return (
         <>
-            {contextHolder}
+            {/* {contextHolder} */}
             <li
                 onClick={() => {
                     onSelected(item)

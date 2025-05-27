@@ -48,7 +48,8 @@ export default function ModelSelect() {
             {contextHolder}
             <div className={`fixed top-[50px] flex justify-between items-center bg-gray-100 dark:bg-gray-900 p-1 rounded-xl`}>
                 {models.map((item) => {
-                    const selected = item.id === currentModel
+                    const model = currentModel === 'deepseek-reasoner' ? 'deepseek-chat' : currentModel
+                    const selected = item.id === model
                     return (
                         <button
                             key={item.id}

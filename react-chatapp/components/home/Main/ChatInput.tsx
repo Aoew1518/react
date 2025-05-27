@@ -1,6 +1,6 @@
 import NativeButton from "@/components/common/Button"
-import { Tooltip } from "antd"
 import { PiLightningFill, PiStopBold } from "react-icons/pi"
+import { FaReact } from "react-icons/fa";
 import { FiSend } from "react-icons/fi"
 import { MdKeyboardArrowDown, MdRefresh } from "react-icons/md";
 import TextareaAutoSize from "react-textarea-autosize"
@@ -15,9 +15,10 @@ import {
     setSelectedChat,
     setSelectedChatTitle,
     setIsLoading,
+    setCurrentModel
 } from '@/store/modules/mainStore'
 import eventBus from "@/store/eventBus";
-import { message } from "antd";
+import { message, Tooltip, Row } from "antd";
 import sendFetch from "@/util/fetch"
 import { useIsMobile } from "@/util/devices"
 import { useTranslation } from 'react-i18next';
@@ -28,19 +29,20 @@ export default function ChatInput({ hideButton = false }) {
     const isMobile = useIsMobile()
     // 记录用户输入消息
     const [messageText, setMessageText] = useState("")
+    const [isDeepSeek, setIsDeepSeek] = useState(false)
     // 记录用户是否正在输入，useRef 的值更新不会导致组件重渲染。
     const stopRef = useRef(false)
     // 保存对话id
     const chatIdRef = useRef("")
-    const { messageList, streamingId, currentModel, selectedChat, isLoading } = useSelector((state: any) => state.mainStore)
+    const { messageList, streamingId, currentModel, maxTokens, temperature, selectedChat, isLoading } = useSelector((state: any) => state.mainStore)
     const { userId } = useSelector((state: any) => state.userStore);
     const dispatch = useDispatch()
     const [messageApi, contextHolder] = message.useMessage();
 
     // 订阅创建新对话事件，这里订阅推荐列表的事件，发送推介列表消息
     useEffect(() => {
-        const callback = (data: string) => {
-            clickSendMessages(data)
+        const callback = async (data: string) => {
+            await clickSendMessages(data)
             // 收到事件通知时，重置当前页码，重新获取列表数据
         };
 
@@ -58,13 +60,13 @@ export default function ChatInput({ hideButton = false }) {
             eventBus.unsubscribe("createNewChat", callback);
             eventBus.unsubscribe("setInputMessage", inputMessageCallback)
         };
-    }, [userId]);
+    }, [userId, currentModel, maxTokens, temperature]);
 
     // 需要依赖 messageList 有值时才会执行
     useEffect(() => {
         // 重新发送消息
-        const reSendMessageCallback = (data: string) => {
-            resendAppoint(data)
+        const reSendMessageCallback = async (data: string) => {
+            await resendAppoint(data)
         };
 
         // 订阅事件
@@ -73,7 +75,7 @@ export default function ChatInput({ hideButton = false }) {
         return () => {
             eventBus.unsubscribe("reSendMessage", reSendMessageCallback)
         };
-    }, [messageList]);
+    }, [messageList, currentModel, maxTokens, temperature]);
 
     // 更新输入款所发送的消息所对应的消息列表的id
     useEffect(() => {
@@ -84,6 +86,18 @@ export default function ChatInput({ hideButton = false }) {
         // 如果正在回复消息则停止接受消息
         stopRef.current = true
     }, [selectedChat])
+
+    // 模型不是deepseek-chat时，则取消掉深度搜索
+    useEffect(() => {
+        if (currentModel !== 'deepseek-chat' && currentModel !== 'deepseek-reasoner') {
+            setIsDeepSeek(false)
+        }
+
+        if (currentModel === 'deepseek-reasoner') {
+            setIsDeepSeek(true)
+        }
+    }, [currentModel])
+
 
     // 服务端创建消息或者更新消息
     async function createOrUpdateMessage(message: Message) {
@@ -154,12 +168,12 @@ export default function ChatInput({ hideButton = false }) {
         // 获取聊天标题，给后面更新聊天标题用，防止请求过程中切换了标题而导致id错误
         const chatId = chatIdRef.current
         // 把聊天标题大致内容请求添加到消息列表
-        const body: MessageRequestBody = { messages: [...messages, message], model: currentModel }
+        const body: MessageRequestBody = { messages: [...messages, message], model: 'deepseek-chat', max_tokens: maxTokens, temperature: temperature }
         let optinion = {
             // 把用户输入的消息包装成 json 格式
             body: JSON.stringify(body),
         }
-        const response = await sendFetch('/api/chat', optinion)
+        const response = await sendFetch('/api/chat?fn=updateChatTitle', optinion)
         if (!response) {
             console.error('获取返回数据失败！');
             return
@@ -173,6 +187,25 @@ export default function ChatInput({ hideButton = false }) {
         let done = false
         // 循环读取数据流，获得返回的对话主题title
         let title = ''
+
+        const processChunk = (chunk: string) => {
+            const lines = chunk.split('\n\n').filter(line => line.trim() !== '');
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        // 去掉 'data: ' 前缀
+                        const data = JSON.parse(line.slice(6));
+                        if (data.type === 'content') {
+                            title += data.content;
+                        }
+                    }
+                    catch (e) {
+                        console.error('解析消息失败:', e);
+                    }
+                }
+            }
+        };
+
         // 循环读取数据流
         while (!done) {
             const result = await reader?.read()
@@ -180,7 +213,7 @@ export default function ChatInput({ hideButton = false }) {
             done = result?.done || false
             // 解码数据流为字符串
             const chunk = decoder.decode(result?.value)
-            title += chunk
+            processChunk(chunk)
         }
 
         optinion = {
@@ -208,7 +241,7 @@ export default function ChatInput({ hideButton = false }) {
         scrollToBottom();
         // 保证发送前的停止发送为默认值 false
         stopRef.current = false
-        const body: MessageRequestBody = { messages, model: currentModel }
+        const body: MessageRequestBody = { messages, model: currentModel, max_tokens: maxTokens, temperature: temperature }
         const controller = new AbortController()
         try {
             const optinion = {
@@ -251,7 +284,43 @@ export default function ChatInput({ hideButton = false }) {
             const decoder = new TextDecoder()
             // 是否读取完成
             let done = false
+            // 储存正文内容
             let content = ''
+            // 存储思维链内容
+            let reasoningContent = '';
+
+            const processChunk = (chunk: string) => {
+                const lines = chunk.split('\n\n').filter(line => line.trim() !== '');
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6)); // 去掉 'data: ' 前缀
+
+                            if (data.type === 'reasoning') {
+                                reasoningContent += data.content;
+                                // 更新消息列表中的思维链内容
+                                dispatch(updataMessageList({
+                                    ...responseMessage,
+                                    content: content,
+                                    reasoningContent: reasoningContent
+                                }));
+                            } else if (data.type === 'content') {
+                                content += data.content;
+                                // 更新消息列表中的内容
+                                dispatch(updataMessageList({
+                                    ...responseMessage,
+                                    content: content,
+                                    reasoningContent: reasoningContent
+                                }));
+                            }
+                        } catch (e) {
+                            console.error('解析消息失败:', e);
+                        }
+                    }
+                }
+            };
+
             // 循环读取数据流
             while (!done) {
                 // 如果停止生成则关闭数据流
@@ -266,15 +335,14 @@ export default function ChatInput({ hideButton = false }) {
                 done = result?.done || false
                 // 解码数据流为字符串
                 const chunk = decoder.decode(result?.value)
-                content += chunk
-                // 读取过程中不断更新该消息内容，进行一个实时更新返回的消息
-                dispatch(updataMessageList({
-                    ...responseMessage,
-                    content: content
-                }))
+                processChunk(chunk);
             }
             // 读取完成，更新服务端消息内容
-            createOrUpdateMessage({ ...responseMessage, content })
+            createOrUpdateMessage({
+                ...responseMessage,
+                content,
+                reasoningContent
+            })
         }
         catch (error) {
             console.error("网络错误，请求失败:", error);
@@ -314,6 +382,7 @@ export default function ChatInput({ hideButton = false }) {
 
         // 更新对话标题
         if (!selectedChat?.title || selectedChat.title === '新对话') {
+            console.log("更新对话标题")
             updateChatTitle(messages)
         }
     }
@@ -385,6 +454,11 @@ export default function ChatInput({ hideButton = false }) {
         }
     }
 
+    function handleDeepSeekClick(value: boolean) {
+        dispatch(setCurrentModel(value ? 'deepseek-reasoner' : 'deepseek-chat'));
+        setIsDeepSeek(value);
+    }
+
     return (
         <>
             {contextHolder}
@@ -417,45 +491,55 @@ export default function ChatInput({ hideButton = false }) {
                         </div>
                     )}
                     <div className={`${!isMobile ? "py-4" : "py-2"
-                        } flex items-end w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)]`}
+                        } w-full border border-black/10 dark:border-gray-800/50 bg-white dark:bg-gray-700 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)]`}
                     >
-                        <div className='mx-3 mb-2.5 text-primary-500'>
-                            <PiLightningFill />
-                        </div>
                         {/* 消息输入框 */}
                         <TextareaAutoSize
-                            className='outline-none flex-1 max-h-64 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0'
+                            className='w-[98%] outline-none flex-1 max-h-64 mx-3 mb-1.5 bg-transparent text-black dark:text-white resize-none border-0'
                             id="message-input"
                             placeholder={t('enterMessage')}
-                            rows={1}
+                            rows={3}
                             value={messageText}
                             onChange={(e) => {
                                 setMessageText(e.target.value)
                             }}
                         />
-                        {/* 发送按钮 */}
-                        {(streamingId !== "") ? (
-                            <NativeButton
-                                className='mx-3 !rounded-lg'
-                                icon={PiStopBold}
-                                variant='primary'
-                                onClick={() => {
-                                    stopRef.current = true
-                                }}
-                            />
-                        ) : (
+                        <Row
+                            justify="space-between"
+                        >
 
                             <NativeButton
-                                className={`${(messageText.trim() === '' || streamingId !== '')
-                                    ? 'cursor-not-allowed' : 'cursor-pointer'} mx-3 !rounded-lg`}
-                                icon={FiSend}
-                                // 为空或者正在生成时禁用
-                                disabled={messageText.trim() === '' || streamingId !== ''}
-                                variant='primary'
-                                onClick={() => { clickSendMessages(messageText) }}
-                            />
-
-                        )}
+                                className={`${isDeepSeek ? '!border-blue-500 !text-blue-500 ' : ''} mx-3 !bg-transparent !rounded-lg`}
+                                variant='outline'
+                                onClick={() => handleDeepSeekClick(!isDeepSeek)}
+                                icon={FaReact}
+                            >
+                                <Tooltip placement="bottom" title="先思考后回答，解决推理问题">
+                                    深度思考
+                                </Tooltip>
+                            </NativeButton>
+                            {/* 发送按钮，如果正在流式传输，则显示停止按钮 */}
+                            {(streamingId !== "") ? (
+                                <NativeButton
+                                    className='mx-3 !rounded-lg'
+                                    icon={PiStopBold}
+                                    variant='primary'
+                                    onClick={() => {
+                                        stopRef.current = true
+                                    }}
+                                />
+                            ) : (
+                                <NativeButton
+                                    className={`${(messageText.trim() === '' || streamingId !== '')
+                                        ? 'cursor-not-allowed' : 'cursor-pointer'} mx-3 !rounded-lg`}
+                                    icon={FiSend}
+                                    // 为空或者正在生成时禁用
+                                    disabled={messageText.trim() === '' || streamingId !== ''}
+                                    variant='primary'
+                                    onClick={() => { clickSendMessages(messageText) }}
+                                />
+                            )}
+                        </Row>
                     </div>
                     {/* 底部来源信息 */}
                     {!isMobile ? (

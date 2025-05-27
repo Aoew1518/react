@@ -19,7 +19,6 @@ function Markdown({ children, className = "", messageId = "", isAssistant = fals
     const dispatch = useDispatch();
     const [messageApi, contextHolder] = message.useMessage();
     const [messageContent, setMessageContent] = useState<string>(String(children).replace(/\n$/, ""));
-    // const { streamingId } = useSelector((state: any) => state.mainStore);
 
     // 复制代码块
     function copyToClipboard(text: string) {

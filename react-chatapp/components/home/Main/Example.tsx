@@ -5,6 +5,8 @@ import { useMemo, useState } from "react"
 import eventBus from "@/store/eventBus"
 import { useIsMobile } from "@/util/devices"
 import { useTranslation } from 'react-i18next';
+import { useSelector } from "react-redux";
+import { message } from "antd";
 
 // 可选择事例
 export default function Example() {
@@ -12,6 +14,8 @@ export default function Example() {
     const [showFull, setShowFull] = useState(false)
     const isMobile = useIsMobile()
     const { t } = useTranslation();
+    const { currentModel } = useSelector((state: any) => state.mainStore);
+    const [messageApi, contextHolder] = message.useMessage();
     const list = useMemo(() => {
         if (isMobile) {
             // 移动端随机显示四个
@@ -27,9 +31,21 @@ export default function Example() {
         }
     }, [showFull])
 
+    function handleClickExample(item: any) {
+        if (currentModel === 'GPT-4' || currentModel === 'gpt-35-turbo') {
+            messageApi.info({
+                content: '该模型暂未开放，请选择deepseek-chat模型',
+                duration: 2,
+            })
+            return
+        }     
+        eventBus.publish("createNewChat", item.prompt)
+    }
+
     return (
         // 需要返回多组件但不想返回多余父元素
         <>
+            {contextHolder}
             <div className='mt-20 mb-4 text-4xl'>
                 <MdOutlineTipsAndUpdates />
             </div>
@@ -39,7 +55,7 @@ export default function Example() {
                         <li key={item.act}>
                             <Button
                                 onClick={() => {
-                                    eventBus.publish("createNewChat", item.prompt)
+                                    handleClickExample(item)
                                 }}
                             >
                                 {item.act}

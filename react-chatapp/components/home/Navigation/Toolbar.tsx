@@ -17,7 +17,7 @@ export default function Toolbar() {
         const shareData = {
             title: '分享',
             text: '分享内容',
-            url: 'https://aiHelper.chat.com',
+            url: 'https://react-chatapp-alpha.vercel.app/',
         }
 
         navigator.share(shareData)

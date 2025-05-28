@@ -62,7 +62,8 @@ export default function FormSubmit({
             return;
         }
 
-        if (formType !== 'login' && verify !== code) {
+        // 验证小写也通过
+        if (formType !== 'login' && verify.toLowerCase() !== code.toLowerCase()) {
             messageApi.info('验证码错误！');
             return;
         }

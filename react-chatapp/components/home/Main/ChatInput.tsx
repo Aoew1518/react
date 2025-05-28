@@ -514,8 +514,8 @@ export default function ChatInput({ hideButton = false }) {
                                 onClick={() => handleDeepSeekClick(!isDeepSeek)}
                                 icon={FaReact}
                             >
-                                <Tooltip placement="bottom" title="先思考后回答，解决推理问题">
-                                    深度思考
+                                <Tooltip placement="bottom" title={t('deepSeekTooltip')}>
+                                    {t('deepSeek')}
                                 </Tooltip>
                             </NativeButton>
                             {/* 发送按钮，如果正在流式传输，则显示停止按钮 */}

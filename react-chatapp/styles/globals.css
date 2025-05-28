@@ -92,6 +92,11 @@ body {
 
 /* 深度思考消息样式 */
 .deepseek-content {
+    ol {
+        font-size: 14px;
+        color: #8b8b8b;
+        margin-left: 16px;
+    }
     p {
         font-size: 14px;
         color: #8b8b8b;

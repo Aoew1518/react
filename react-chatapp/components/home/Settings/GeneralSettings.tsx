@@ -84,7 +84,7 @@ export default function GeneralSettings() {
                     align="middle"
                     justify="space-between"
                 >
-                    <Col>模型设置</Col>
+                    <Col>{t('modelSettings')}</Col>
                     <Col>
                         <Button
                             variant='text'
@@ -101,7 +101,7 @@ export default function GeneralSettings() {
                     align="middle"
                     justify="space-between"
                 >
-                    <Col>分享应用</Col>
+                    <Col>{t('shareApp')}</Col>
                     <Col>
                         <Button
                             variant='text'

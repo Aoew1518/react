@@ -103,7 +103,7 @@ export default function ModelSettings({ open, onClose }: { open: boolean, onClos
     return (
         <>
             <Drawer
-                title={'模型设置'}
+                title={t('modelSettings')}
                 width={400}
                 onClose={onClose}
                 open={open}
@@ -114,7 +114,7 @@ export default function ModelSettings({ open, onClose }: { open: boolean, onClos
                     justify="space-between"
                 >
                     <Col>
-                        <span>更换模型 </span>
+                        <span>{t('replacementModel')} </span>
                         <Popover content={modelContent} title="模型说明" trigger="click">
                             <QuestionCircleOutlined />
                         </Popover>
@@ -138,7 +138,7 @@ export default function ModelSettings({ open, onClose }: { open: boolean, onClos
                     justify="space-between"
                 >
                     <Col>
-                        <span>最大输出长度 </span>
+                        <span>{t('maximumOutputLength')} </span>
                         <Popover content={maxTokensContent} title="max_tokens 说明" trigger="click">
                             <QuestionCircleOutlined />
                         </Popover>
@@ -162,7 +162,7 @@ export default function ModelSettings({ open, onClose }: { open: boolean, onClos
                     wrap={false}
                 >
                     <Col>
-                        <span>模型自由度 </span>
+                        <span>{t('modelDegreesOfFreedom')} </span>
                         <Popover content={temperatureContent} title="temperature 说明" trigger="click">
                             <QuestionCircleOutlined />
                         </Popover>

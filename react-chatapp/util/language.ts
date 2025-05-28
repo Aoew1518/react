@@ -23,6 +23,8 @@ i18n
                     newChat: "New Chat",
                     regenerateBtn: "Regenerate",
                     stopGenerating: "Stop Generating",
+                    deepSeek: "Deep Seek",
+                    deepSeekTooltip: "Think first, answer later, solve reasoning problems",
 
                     // 时间排序
                     today: "Today",
@@ -69,6 +71,13 @@ i18n
                     systemSettings: "System Settings",
                     deleteAllChats: "Delete All Chats",
                     logOut: "Log Out",
+                    modelSettings: "Model Settings",
+                    shareApp: "Share App",
+
+                    // 模型设置
+                    replacementModel: "Replacement Model",
+                    maximumOutputLength: "Maximum output length",
+                    modelDegreesOfFreedom: "Model degrees of freedom",
 
                     // 首页展示内容
                     selfIntroduction: "Hi, nice to meet you!",
@@ -94,6 +103,8 @@ i18n
                     newChat: "新对话",
                     regenerateBtn: "重新生成",
                     stopGenerating: "停止生成",
+                    deepSeek: "深度思考",
+                    deepSeekTooltip: "先思考后回答，解决推理问题",
 
                     // 时间排序
                     today: "今天",
@@ -140,6 +151,13 @@ i18n
                     systemSettings: "系统设置",
                     deleteAllChats: "删除所有对话",
                     logOut: "退出登录",
+                    modelSettings: "模型设置",
+                    shareApp: "分享应用",
+
+                    // 模型设置
+                    replacementModel: "模型替换",
+                    maximumOutputLength: "最大输出长度",
+                    modelDegreesOfFreedom: "模型自由度",
 
                     // 首页展示内容
                     selfIntroduction: "我是AI聊天助手，很高兴见到你！",
